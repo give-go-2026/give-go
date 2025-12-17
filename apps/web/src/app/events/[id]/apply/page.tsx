@@ -3,7 +3,7 @@ import ShareButton from '@/components/ui/share-button';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import Button from '@repo/ui/Button';
+import Button from '@repo/ui/button';
 import { fetchCardById } from '@/lib/utils';
 
 export default async function ApplyPage({ params }: { params: Promise<{ id: string }> }) {

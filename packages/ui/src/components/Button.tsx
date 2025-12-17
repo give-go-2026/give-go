@@ -3,6 +3,8 @@
 import { ButtonProps } from '../types';
 import { getButtonStyle } from '../utils/buttons';
 
+import '../styles/button.css';
+
 export default function Button({
   styleType,
   styleVariant,

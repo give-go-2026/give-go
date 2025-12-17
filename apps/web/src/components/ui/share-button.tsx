@@ -1,21 +1,21 @@
 'use client';
 
-import Button from '@repo/ui/Button';
+import Button from '@repo/ui/button';
 
 export default function ShareButton({
   fill = false,
   big,
   small,
-  onClick = () => alert('Link másolva a vágólapra!'),
+  onClickAction = () => alert('Link másolva a vágólapra!'),
 }: {
   fill?: boolean;
-  onClick?: () => void;
+  onClickAction?: () => void;
   big?: boolean;
   small?: boolean;
 }) {
   const handleClick = () => {
     navigator.clipboard.writeText(window.location.href);
-    onClick();
+    onClickAction();
   };
 
   return (

@@ -1,11 +1,7 @@
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import { PropsWithChildren } from 'react';
-import {
-  metadataDescription,
-  metadataKeywords,
-  productName,
-} from '@/lib/constants';
+import { metadataDescription, metadataKeywords, productName } from '@/lib/constants';
 import '@/components/globals.css';
 
 const roboto = Roboto({

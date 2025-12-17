@@ -21,9 +21,7 @@ export default function Category({ category }: { category: Category }) {
   const cards = getCardsByCategory(category);
   return (
     <article className='flex flex-col gap-y-3'>
-      <h3 className='text-2xl font-semibold md:text-3xl'>
-        {categoryTitleLookup[category]}
-      </h3>
+      <h3 className='text-2xl font-semibold md:text-3xl'>{categoryTitleLookup[category]}</h3>
       <div className='snap-x snap-mandatory overflow-auto md:overflow-visible'>
         <div className='grid min-h-fit min-w-fit grid-flow-col place-content-between gap-4 pb-2'>
           {cards.map((card) => (

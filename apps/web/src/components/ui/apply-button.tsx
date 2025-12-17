@@ -1,15 +1,15 @@
 'use client';
 
-import Button from '@repo/ui/Button';
+import Button from '@repo/ui/button';
 
 export default function ApplyButton({
   fill = false,
   big,
   small,
-  onClick,
+  onClickAction,
 }: {
   fill?: boolean;
-  onClick?: () => void;
+  onClickAction?: () => void;
   big?: boolean;
   small?: boolean;
 }) {
@@ -20,7 +20,7 @@ export default function ApplyButton({
       fill={fill}
       big={big}
       small={small}
-      onClick={onClick}
+      onClick={onClickAction}
     >
       Jelentkezem
     </Button>
