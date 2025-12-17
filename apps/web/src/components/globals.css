@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+:root {
+  --background: #ffffff;
+  --foreground: #284b63;
+  --main-gradient: linear-gradient(0, #60fcd2, #98deec);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-roboto: var(--font-roboto);
+}
+
+@utility main-gradient {
+  background: var(--main-gradient);
+}
+
+/*
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #555555;
+    --foreground: #ededed;
+  }
+}
+*/
+
+body {
+  @apply font-roboto bg-background text-foreground;
+}

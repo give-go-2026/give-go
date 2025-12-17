@@ -1,0 +1,14 @@
+import Link from 'next/link';
+import { Fragment } from 'react';
+
+export default function NavLinks() {
+  return (
+    <Fragment>
+      <Link href='#'>Fiók beállítások</Link>
+      <Link href='#'>Kapcsolat</Link>
+      <Link href='#'>Hiba bejelentő</Link>
+      <Link href='#'>Rólunk</Link>
+      <Link href='#'>Kijelentkezés</Link>
+    </Fragment>
+  );
+}
