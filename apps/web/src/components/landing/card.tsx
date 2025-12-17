@@ -5,7 +5,7 @@ import { formatDuration } from '@/lib/utils';
 
 export default function Card({ card }: { card: EventCard }) {
   return (
-    <div className='h-[535px] max-h-[535px] w-[300px] max-w-[300px] snap-center rounded-3xl shadow-xl md:w-[335px] md:max-w-[335px]'>
+    <div className='h-133.75 max-h-133.75 w-75 max-w-75 snap-center rounded-3xl shadow-xl md:w-83.75 md:max-w-83.75'>
       <div className='flex h-full flex-col gap-2 overflow-clip rounded-3xl'>
         <Image
           src={card.image_url}
@@ -33,8 +33,8 @@ export default function Card({ card }: { card: EventCard }) {
           <span className='text-lg font-bold text-black'>
             {formatDuration(new Date(card.start_date), new Date(card.end_date))}
           </span>
-          <span className='text-sm text-gray-600'>{card.organizer}</span>
-          <span className='h-full max-h-[75px] overflow-hidden text-sm text-gray-500'>
+          <span className='text-sm text-gray-600'>{card.organizer.name}</span>
+          <span className='h-full max-h-18.75 overflow-hidden text-sm text-gray-500'>
             {card.description}
           </span>
           <div className='mt-2 flex justify-between gap-2'>

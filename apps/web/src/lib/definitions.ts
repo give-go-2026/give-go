@@ -12,9 +12,17 @@ export type EventCard = {
   address: string;
   start_date: string;
   end_date: string;
-  organizer: string;
-  organizer_email: string;
   description: string;
+  description_long?: string;
   tags: Tag[];
   image_url: string;
+  organizer: Organizer;
+  gallery_images: string[];
+};
+
+export type Organizer = {
+  id: number;
+  name: string;
+  email: string;
+  description: string;
 };

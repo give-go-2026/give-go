@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  ArrowRightIcon,
-  MagnifyingGlassIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowRightIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 
 export default function QuickSearchBar() {
@@ -12,7 +9,7 @@ export default function QuickSearchBar() {
   const [endDate, setEndDate] = useState('');
 
   return (
-    <div className='bg-background -mb-[70px] flex h-64 w-full flex-col items-center justify-between gap-4 rounded-3xl px-4 py-6 shadow-xl shadow-black/15 md:-mb-[46px] md:h-36 md:flex-row'>
+    <div className='bg-background -mb-17.5 flex h-64 w-full flex-col items-center justify-between gap-4 rounded-3xl px-4 py-6 shadow-xl shadow-black/15 md:-mb-11.5 md:h-36 md:flex-row'>
       <div className='flex max-h-fit w-full md:hidden'>
         <input
           type='text'
