@@ -43,7 +43,6 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                 {formatDuration(new Date(card.start_date), new Date(card.end_date))}
               </span>
               <span className='text-foreground/80 font-bold'>{card.address}</span>
-              <span className='text-foreground/90 text-lg font-medium'>{card.organizer.name}</span>
               <span>{card.description_long || card.description}</span>
               <div className='mt-2 ml-auto flex w-1/2 justify-between gap-2 md:w-1/4'>
                 <Apply id={card.id} />
