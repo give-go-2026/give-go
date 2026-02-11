@@ -22,7 +22,10 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         <section className='mx-auto -mt-25 w-full max-w-416 px-3 py-6 md:px-30 md:py-8'>
           <div className='bg-background w-full rounded-3xl shadow-2xl'>
             <div className='flex flex-1 flex-col justify-center gap-3 p-6'>
-              <h1 className='text-3xl font-bold tracking-wide'>{card.title}</h1>
+              <div>
+                <h1 className='m-0 text-3xl font-bold tracking-wide'>{card.title}</h1>
+                <h2 className='text-foreground/90 text-lg'>{card.organizer.name}</h2>
+              </div>
               <div className='max-h-fit w-full snap-x snap-mandatory overflow-auto'>
                 <div className='grid h-full min-w-fit grid-flow-col place-content-baseline gap-2 pb-1'>
                   {card.tags.map((tag) => (
