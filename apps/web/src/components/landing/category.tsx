@@ -1,10 +1,10 @@
 import { categoryTitleLookup } from '@/lib/constants';
-import { type Category } from '@/lib/definitions';
+import { type GroupingCategory } from '@/lib/definitions';
 import Link from 'next/link';
 import Card from './card';
 import { placeHolderCards } from '@/lib/placeholder-data';
 
-const getCardsByCategory = (category: Category) => {
+const getCardsByCategory = (category: GroupingCategory) => {
   switch (category) {
     case 'upcoming':
       return placeHolderCards.slice(0, 3);
@@ -17,7 +17,7 @@ const getCardsByCategory = (category: Category) => {
   }
 };
 
-export default function Category({ category }: { category: Category }) {
+export default function Category({ category }: { category: GroupingCategory }) {
   const cards = getCardsByCategory(category);
   return (
     <article className='flex flex-col gap-y-3'>

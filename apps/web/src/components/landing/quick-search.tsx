@@ -1,12 +1,21 @@
 'use client';
 
 import { ArrowRightIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { useState } from 'react';
 
 export default function QuickSearchBar() {
   const [text, setText] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  const handleSearch = () => {
+    if (!text && !startDate && !endDate) return;
+    redirect(
+      `/events/search?${text ? `event=${encodeURIComponent(text)}&` : ''}${startDate ? `startDate=${encodeURIComponent(startDate)}&` : ''}${endDate ? `endDate=${encodeURIComponent(endDate)}` : ''}`,
+    );
+  };
 
   return (
     <div className='bg-background -mb-17.5 flex h-64 w-full flex-col items-center justify-between gap-4 rounded-3xl px-4 py-6 shadow-xl shadow-black/15 md:-mb-11.5 md:h-36 md:flex-row'>
@@ -18,7 +27,10 @@ export default function QuickSearchBar() {
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-        <div className='bg-foreground rounded-r-lg p-4'>
+        <div
+          className='bg-foreground hover:bg-foreground/90 cursor-pointer rounded-r-lg p-4'
+          onClick={handleSearch}
+        >
           <MagnifyingGlassIcon className='h-5 w-5 text-white' />
         </div>
       </div>
@@ -48,14 +60,20 @@ export default function QuickSearchBar() {
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-        <div className='bg-foreground rounded-r-lg p-4 md:p-3'>
+        <div
+          className='bg-foreground hover:bg-foreground/90 cursor-pointer rounded-r-lg p-4 md:p-3'
+          onClick={handleSearch}
+        >
           <MagnifyingGlassIcon className='h-5 w-5 text-white' />
         </div>
       </div>
-      <button className='bg-foreground flex max-h-fit w-full flex-9 items-center justify-between gap-6 rounded-lg px-4 py-2 text-xl font-light text-white md:mt-3'>
+      <Link
+        href='/events/search'
+        className='bg-foreground hover:bg-foreground/90 flex max-h-fit w-full flex-9 items-center justify-between gap-6 rounded-lg px-4 py-2 text-xl font-light text-white md:mt-3'
+      >
         <span>Részletes Kereső és Szűrő</span>
         <ArrowRightIcon className='h-5 w-6' />
-      </button>
+      </Link>
     </div>
   );
 }

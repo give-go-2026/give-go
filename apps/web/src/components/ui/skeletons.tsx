@@ -1,5 +1,5 @@
 import { categoryTitleLookup } from '@/lib/constants';
-import { type Category } from '@/lib/definitions';
+import { type GroupingCategory } from '@/lib/definitions';
 import Link from 'next/link';
 
 export function CardSkeleton() {
@@ -8,7 +8,7 @@ export function CardSkeleton() {
   );
 }
 
-export function CategorySkeleton({ category }: { category: Category }) {
+export function CategorySkeleton({ category }: { category: GroupingCategory }) {
   return (
     <article className='flex flex-col gap-3'>
       <h3 className='text-2xl font-semibold md:text-3xl'>{categoryTitleLookup[category]}</h3>
