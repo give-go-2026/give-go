@@ -1,7 +1,7 @@
 'use client';
 
 import { searchProfiles } from '@/lib/constants';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ArrowDownIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import Button from '@repo/ui/button';
 import Image from 'next/image';
 import { PropsWithChildren, useState } from 'react';
@@ -108,13 +108,15 @@ export default function SearchMain() {
   }
 
   return (
-    <main className='container -mt-15 flex grow flex-col gap-6 rounded-3xl bg-gray-100 py-6 shadow-xl'>
-      <section className='flex w-full flex-col gap-12 px-6 md:flex-row'>
+    <main className='container flex grow flex-col gap-6 rounded-3xl bg-gray-100 py-6 shadow-xl'>
+      <section className='flex w-full flex-col gap-12 px-6 2xl:flex-row'>
         <div className='flex flex-col justify-center gap-2'>
-          <h2 className='text-3xl font-semibold'>Válaszd ki a rád passzolót!</h2>
-          <span>Válasz az előre beálíltott profilokból vagy állísd be egyedileg a keresőt.</span>
+          <h2 className='text-2xl font-semibold md:text-3xl'>Válaszd ki a rád passzolót!</h2>
+          <span className='md:text-lg'>
+            Válasz az előre beálíltott profilokból vagy állísd be egyedileg a keresőt.
+          </span>
         </div>
-        <div className='flex gap-3'>
+        <div className='grid grid-cols-1 place-items-center gap-3 px-3 md:grid-cols-2 lg:p-0 xl:grid-cols-4'>
           {searchProfiles.map((profile) => (
             <ProfileCard
               key={profile.name}
@@ -132,7 +134,7 @@ export default function SearchMain() {
           <SectionInput
             placeholder='pl: Máltai szeretet szolgálat'
             name='organization'
-            className='w-1/2'
+            className='w-full md:w-1/2'
           />
         </form>
         <div className='flex flex-wrap gap-3'>
@@ -154,7 +156,7 @@ export default function SearchMain() {
           <SectionInput
             placeholder='pl: Állatok'
             name='group'
-            className='w-1/2'
+            className='w-full md:w-1/2'
           />
         </form>
         <div className='flex flex-wrap gap-3'>
@@ -174,7 +176,7 @@ export default function SearchMain() {
           <SectionInput
             placeholder='Pl: Kalocsa'
             name='location'
-            className='w-1/2'
+            className='w-full md:w-1/2'
           />
         </form>
         <span>Válasz egy városrészt amin belül mutatjuk a lehetőségeket.</span>
@@ -193,7 +195,7 @@ export default function SearchMain() {
       <SectionWrapper>
         <SectionTitle title='Hogyan szeretnél segíteni?' />
         <SectionDescription description='Többet is beállíthatsz.' />
-        <div className='grid grid-cols-3 justify-around gap-18'>
+        <div className='grid grid-cols-1 justify-around gap-6 md:grid-cols-3 md:gap-14 lg:gap-18'>
           {Object.entries(locationTypes).map(([key, { label, selected }]) => (
             <Button
               key={key}
@@ -223,7 +225,7 @@ export default function SearchMain() {
           <SectionInput
             placeholder='Pl: Fizikai/irodai munka'
             name='type'
-            className='w-1/2'
+            className='w-full md:w-1/2'
           />
         </form>
         <div className='flex flex-wrap gap-3'>
@@ -241,14 +243,15 @@ export default function SearchMain() {
         {choosesExactDate ? (
           <>
             <SectionDescription description='Időpont választó' />
-            <div className='flex justify-between gap-4'>
+            <div className='flex flex-col justify-between gap-4 md:flex-row'>
               <input
                 type='date'
                 className='w-full rounded-lg border border-gray-300 px-4 py-2 text-lg'
                 value={chosenDates.start}
                 onChange={(e) => setChosenDates((prev) => ({ ...prev, start: e.target.value }))}
               />
-              <ArrowRightIcon className='h-12 w-12 self-center' />
+              <ArrowDownIcon className='size-6 self-center md:hidden' />
+              <ArrowRightIcon className='hidden size-12 self-center md:block' />
               <input
                 type='date'
                 className='w-full rounded-lg border border-gray-300 px-4 py-2 text-lg'
@@ -258,7 +261,7 @@ export default function SearchMain() {
             </div>
           </>
         ) : (
-          <div className='grid grid-cols-2 justify-around gap-12'>
+          <div className='grid grid-cols-2 justify-around gap-6 md:gap-12'>
             {Object.entries(selectedDayType).map(([key, { label, selected }]) => (
               <Button
                 key={key}
@@ -290,14 +293,15 @@ export default function SearchMain() {
         {choosesExactTime ? (
           <>
             <SectionDescription description='Időszak választó' />
-            <div className='flex justify-between gap-4'>
+            <div className='flex flex-col justify-between gap-4 md:flex-row'>
               <input
                 type='time'
                 className='w-full rounded-lg border border-gray-300 px-4 py-2 text-lg'
                 value={chosenTime.start}
                 onChange={(e) => setChosenTime((prev) => ({ ...prev, start: e.target.value }))}
               />
-              <ArrowRightIcon className='h-12 w-12 self-center' />
+              <ArrowDownIcon className='size-6 self-center md:hidden' />
+              <ArrowRightIcon className='hidden size-12 self-center md:block' />
               <input
                 type='time'
                 className='w-full rounded-lg border border-gray-300 px-4 py-2 text-lg'
@@ -307,7 +311,7 @@ export default function SearchMain() {
             </div>
           </>
         ) : (
-          <div className='grid grid-cols-4 justify-around gap-12'>
+          <div className='grid grid-cols-2 justify-around gap-6 md:grid-cols-4 md:gap-12'>
             {Object.entries(selectedTimeType).map(([key, { label, selected }]) => (
               <Button
                 key={key}
@@ -358,11 +362,11 @@ function SectionWrapper({ children }: PropsWithChildren) {
 }
 
 function SectionTitle({ title }: { title: string }) {
-  return <h3 className='text-2xl font-semibold'>{title}</h3>;
+  return <h3 className='text-xl font-semibold md:text-2xl'>{title}</h3>;
 }
 
 function SectionDescription({ description }: { description: string }) {
-  return <span className='text-lg'>{description}</span>;
+  return <span className='text-base md:text-lg'>{description}</span>;
 }
 
 function SectionInput({
@@ -395,7 +399,7 @@ function ProfileCard({
 }) {
   return (
     <button
-      className={`flex aspect-video h-32 flex-col items-center justify-center gap-3 rounded-xl border border-gray-300 p-3 shadow-lg transition-transform hover:scale-102 ${selected ? 'main-gradient' : 'bg-white'}`}
+      className={`flex aspect-video max-h-32 w-full flex-col items-center justify-center gap-3 rounded-xl border border-gray-300 p-3 shadow-lg transition-transform hover:scale-102 ${selected ? 'main-gradient' : 'bg-white'}`}
       onClick={onClickAction}
     >
       <Image
