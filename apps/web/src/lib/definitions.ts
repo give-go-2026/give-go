@@ -1,6 +1,9 @@
-import { categories } from './constants';
+import { groupingCategories, registrationtypes } from './constants';
 
-export type GroupingCategory = (typeof categories)[number];
+export type RegistrationType = (typeof registrationtypes)[number];
+
+export type GroupingCategory = (typeof groupingCategories)[number];
+
 export type Profile = {
   id: number;
   title: string;
@@ -27,10 +30,6 @@ export type Organizer = {
   email: string;
   description: string;
 };
-
-export type Yes = 'Igen';
-export type No = 'Nem';
-export type YesNo = Yes | No;
 
 // Table: organizations.json
 export interface Organization {
@@ -74,11 +73,11 @@ export type Event = {
   time_range: string; // Format: "HH:MM-HH:MM"
 
   // Status flags
-  is_recurring: YesNo;
-  is_one_time: YesNo;
-  is_in_person: YesNo;
-  is_hybrid: YesNo;
-  is_online: YesNo;
+  is_recurring: boolean;
+  is_one_time: boolean;
+  is_in_person: boolean;
+  is_hybrid: boolean;
+  is_online: boolean;
 };
 
 // Table: event_dates.json

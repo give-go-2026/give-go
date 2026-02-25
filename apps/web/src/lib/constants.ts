@@ -21,13 +21,15 @@ export const metadataKeywords: Metadata['keywords'] = [
   'segítségnyújtás',
 ] as const;
 
+export const registrationtypes = ['volunteer', 'organization'] as const;
+
 export const categoryTitleLookup: Readonly<Record<GroupingCategory, string>> = {
   upcoming: 'Hamarosan Közelgő Események',
   permanent: 'Állandó Segítségnyújtás',
   popular: 'Népszerű önkénteskedések',
 } as const;
 
-export const categories = ['upcoming', 'permanent', 'popular'] as const;
+export const groupingCategories = ['upcoming', 'permanent', 'popular'] as const;
 
 export const tags: ReadonlyArray<Tag> = [
   {
