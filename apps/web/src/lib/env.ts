@@ -2,11 +2,14 @@ import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
 
 export const env = createEnv({
-  server: {},
+  server: {
+    DEV_ORIGINS: z.string().nonempty(),
+  },
   client: {
     NEXT_PUBLIC_PRODUCT_NAME: z.string().nonempty(),
   },
   runtimeEnv: {
     NEXT_PUBLIC_PRODUCT_NAME: process.env.NEXT_PUBLIC_PRODUCT_NAME,
+    DEV_ORIGINS: process.env.DEV_ORIGINS,
   },
 });
