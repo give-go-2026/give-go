@@ -24,8 +24,8 @@ export const metadataKeywords: Metadata['keywords'] = [
 export const registrationtypes = ['volunteer', 'organization'] as const;
 
 export const categoryTitleLookup: Readonly<Record<GroupingCategory, string>> = {
-  upcoming: 'Hamarosan Közelgő Események',
-  permanent: 'Állandó Segítségnyújtás',
+  upcoming: 'Közelgő események',
+  permanent: 'Rendszeres segítségnyújtás',
   popular: 'Népszerű önkénteskedések',
 } as const;
 

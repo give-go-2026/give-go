@@ -1,5 +1,7 @@
 import { placeHolderCards } from './placeholder-data';
 
+const removeSpacesAfterDots = (value: string): string => value.replace(/\.(?=\s.*\.)\s/g, '.');
+
 export const formatDuration = (start: Date, end: Date): string => {
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
@@ -9,15 +11,19 @@ export const formatDuration = (start: Date, end: Date): string => {
     minute: '2-digit',
   };
   if (start.getDate() === end.getDate()) {
-    const startFormatted = new Intl.DateTimeFormat('hu-HU', options).format(start);
+    const startFormatted = removeSpacesAfterDots(
+      new Intl.DateTimeFormat('hu-HU', options).format(start),
+    );
     const endFormatted = new Intl.DateTimeFormat('hu-HU', {
       hour: '2-digit',
       minute: '2-digit',
     }).format(end);
     return `${startFormatted} - ${endFormatted}`;
   }
-  const startFormatted = new Intl.DateTimeFormat('hu-HU', options).format(start);
-  const endFormatted = new Intl.DateTimeFormat('hu-HU', options).format(end);
+  const startFormatted = removeSpacesAfterDots(
+    new Intl.DateTimeFormat('hu-HU', options).format(start),
+  );
+  const endFormatted = removeSpacesAfterDots(new Intl.DateTimeFormat('hu-HU', options).format(end));
   return `${startFormatted} - ${endFormatted}`;
 };
 

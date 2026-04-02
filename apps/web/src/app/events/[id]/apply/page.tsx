@@ -45,8 +45,8 @@ export default async function ApplyPage({ params }: { params: Promise<{ id: stri
           <div className='hidden h-full w-full flex-col items-center justify-center p-6 text-center md:col-span-3 md:flex md:rounded-r-3xl'>
             <h1 className='mb-12 text-3xl font-black tracking-wide'>Választott programod</h1>
             <p className='mb-6 text-lg text-pretty'>
-              Ahhoz hogy jelentkezz a programra, nyomd meg a gombot és küld el az emailt a céged
-              kapcsolattartójának.
+              A jelentkezésed emailben tudod elküldeni a kiválasztott civil szervezet
+              képviselőjének.
             </p>
             <div className='flex w-full gap-6'>
               <Link
@@ -82,8 +82,7 @@ export default async function ApplyPage({ params }: { params: Promise<{ id: stri
         </Link>
         <div className='md:hidden'>
           <p className='mb-3 text-lg text-pretty'>
-            Ahhoz hogy jelentkezz a programra, nyomd meg a gombot és küld el az emailt a céged
-            kapcsolattartójának.
+            A jelentkezésed emailben tudod elküldeni a kiválasztott civil szervezet képviselőjének.
           </p>
           <div className='mx-auto flex w-full flex-col gap-x-6 gap-y-3'>
             <Link
