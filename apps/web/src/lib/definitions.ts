@@ -1,4 +1,7 @@
+import { Resend } from 'resend';
 import { groupingCategories, registrationtypes } from './constants';
+
+export const resend = new Resend(process.env.RESEND_API_KEY);
 
 export type RegistrationType = (typeof registrationtypes)[number];
 

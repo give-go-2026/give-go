@@ -29,7 +29,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
   return (
-    <html lang='hu'>
+    <html
+      lang='hu'
+      suppressHydrationWarning
+    >
       <body className={`${roboto.variable} antialiased`}>{children}</body>
     </html>
   );

@@ -1,12 +1,4 @@
-import NewsLetterSubscribeForm from '@/components/newsletter/subscribe-form';
-
-export default async function ComingSoonPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const { success } = await searchParams;
-
+export default function Loading() {
   return (
     <main className='main-gradient flex min-h-dvh'>
       <section className='container mx-auto flex max-w-5xl flex-col gap-6 px-4 py-18'>
@@ -17,13 +9,6 @@ export default async function ComingSoonPage({
           amelyek önkénteseket keresnek, és megtalálhatod a hozzád legjobban illő programokat.
           Iratkozz fel, hogy elsőként értesülj az indulásról - alig várjuk, hogy csatlakozz!
         </p>
-        {success ? (
-          <div className='flex flex-col items-center gap-8'>
-            <p className='text-3xl tracking-wide text-green-600'>Köszönjük, hogy feliratkoztál!</p>
-          </div>
-        ) : (
-          <NewsLetterSubscribeForm />
-        )}
       </section>
     </main>
   );
