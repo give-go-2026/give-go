@@ -3,12 +3,12 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
-    DEV_ORIGINS: z.string().nonempty(),
+    DEV_ORIGINS: z.string().optional(),
     DATABASE_URL: z.string().nonempty(),
     RESEND_API_KEY: z.string().nonempty(),
   },
   client: {
-    NEXT_PUBLIC_PRODUCT_NAME: z.string().nonempty(),
+    NEXT_PUBLIC_PRODUCT_NAME: z.string().default('Give&Go'),
   },
   runtimeEnv: {
     NEXT_PUBLIC_PRODUCT_NAME: process.env.NEXT_PUBLIC_PRODUCT_NAME,
