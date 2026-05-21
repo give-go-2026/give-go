@@ -10,7 +10,7 @@ export default function Info() {
 
   return (
     <section className='mx-auto flex w-full max-w-416 flex-col gap-4 px-3 py-4 md:gap-6 md:px-28 md:py-5'>
-      <div className='bg-background mb-5 -mt-34 flex w-full flex-col justify-between gap-4 rounded-3xl px-4 py-6 shadow-xl shadow-black/15 md:-mb-11.5'>
+      <div className='bg-background -mt-34 mb-5 flex w-full flex-col justify-between gap-4 rounded-3xl px-4 py-6 shadow-xl shadow-black/15 md:-mb-11.5'>
         <div className='flex w-full items-center gap-3 rounded-3xl bg-orange-50 px-4 py-6'>
           <ExclamationTriangleIcon className='h-8 w-8 shrink-0' />
           <p>
@@ -22,7 +22,7 @@ export default function Info() {
         <p>
           Ha elbizonytalanodtál vagy segítségre van szükséged akkor{' '}
           <Link
-            href='/'
+            href='#'
             className='font-bold underline'
           >
             itt találsz

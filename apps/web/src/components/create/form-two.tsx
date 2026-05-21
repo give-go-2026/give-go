@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FormField, SwitchField } from './fields';
+import { FormField, SwitchField, ListField, TagField } from './fields';
 
 const DAYS = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
 
@@ -39,6 +39,64 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
 
   return (
     <section className='mx-auto mt-10 flex w-full flex-col gap-6 px-3 py-4'>
+      <div className='grid grid-cols-1 gap-10 md:grid-cols-2'>
+        <FormField
+          label='Esemény elnevezése'
+          placeholder='pl.: Óvoda festés'
+          type='string'
+          name='eventName'
+          undertext={null}
+          error={errors['eventName']}
+        />
+        <FormField
+          label='Esemény címe'
+          placeholder='pl.: Arad, Pócsika utca 12.'
+          type='string'
+          name='eventAddress'
+          undertext={null}
+          error={errors['eventAddress']}
+        />
+
+        <FormField
+          label='Esemény által támogatott témák'
+          placeholder='pl.: Állatvédelem'
+          type='string'
+          name='eventTheme'
+          undertext={'Válaszd kiknek, milyen témában nyújt támogatás az esemény'}
+          error={errors['eventTheme']}
+        />
+        <ListField
+          label='Munka típusa'
+          values={['fizikai', 'szociális', 'irodai']}
+          name='eventType'
+          undertext={null}
+          error={errors['eventType']}
+        />
+
+        <div className='col-span-full h-auto'>
+          <TagField
+            label='Tagek'
+            tags={[
+              'Idősek',
+              'Gyerekek',
+              'Fiatalok',
+              'Hajléktalanok',
+              'Fogyatékossággal élők',
+              'Szegregátumok',
+              'Iskolák',
+              'Kutyák',
+              'Macskák',
+              'Madarak',
+              'Kacsák',
+              'Fajtamentés',
+            ]}
+            name='eventTags'
+            undertext={null}
+            error={errors['eventTags']}
+          />
+        </div>
+      </div>
+
       <div className='flex flex-col gap-2'>
         <label>Segítség Fajtája</label>
         <div className='flex flex-row gap-4'>
@@ -52,7 +110,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
             }}
           />
           <SwitchField
-            options={['Online/Irodai', 'Személyes']}
+            options={['Online', 'Személyes', 'Hibrid']}
             name='helpMode'
             defaultIndex={1}
           />
@@ -154,30 +212,32 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
           </div>
           {differentTimes ? (
             <div className='flex flex-col gap-3'>
-              {[...selectedDays].sort((a, b) => a - b).map((dayIndex) => (
-                <div
-                  key={dayIndex}
-                  className='grid grid-cols-[auto_1fr_1fr] items-end gap-4'
-                >
-                  <span className='mb-0.5 whitespace-nowrap rounded-full bg-cyan-900 px-4 py-2 text-sm font-medium text-white'>
-                    {DAYS[dayIndex]}
-                  </span>
-                  <FormField
-                    label='Kezdés időpontja'
-                    placeholder='pl.: 10:00'
-                    type='string'
-                    name={`startTime_${dayIndex}`}
-                    undertext={null}
-                  />
-                  <FormField
-                    label='Zárás időpontja'
-                    placeholder='pl.: 17:00'
-                    type='string'
-                    name={`endTime_${dayIndex}`}
-                    undertext={null}
-                  />
-                </div>
-              ))}
+              {[...selectedDays]
+                .sort((a, b) => a - b)
+                .map((dayIndex) => (
+                  <div
+                    key={dayIndex}
+                    className='grid grid-cols-[auto_1fr_1fr] items-end gap-4'
+                  >
+                    <span className='mb-0.5 rounded-full bg-cyan-900 px-4 py-2 text-sm font-medium whitespace-nowrap text-white'>
+                      {DAYS[dayIndex]}
+                    </span>
+                    <FormField
+                      label='Kezdés időpontja'
+                      placeholder='pl.: 10:00'
+                      type='string'
+                      name={`startTime_${dayIndex}`}
+                      undertext={null}
+                    />
+                    <FormField
+                      label='Zárás időpontja'
+                      placeholder='pl.: 17:00'
+                      type='string'
+                      name={`endTime_${dayIndex}`}
+                      undertext={null}
+                    />
+                  </div>
+                ))}
               {errors['perDayTimes'] && (
                 <p className='text-sm text-red-500'>{errors['perDayTimes']}</p>
               )}
@@ -213,25 +273,6 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
           </button>
         </div>
       )}
-
-      <div className='grid grid-cols-1 gap-10 md:grid-cols-2'>
-        <FormField
-          label='Esemény elnevezése'
-          placeholder='pl.: Óvoda festés'
-          type='string'
-          name='eventName'
-          undertext={null}
-          error={errors['eventName']}
-        />
-        <FormField
-          label='Esemény címe'
-          placeholder='pl.: Arad, Pócsika utca 12.'
-          type='string'
-          name='eventAddress'
-          undertext={null}
-          error={errors['eventAddress']}
-        />
-      </div>
     </section>
   );
 }

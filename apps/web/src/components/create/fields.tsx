@@ -44,6 +44,51 @@ export function FormField({
   );
 }
 
+export function ListField({
+  label,
+  values,
+  name,
+  undertext,
+  error,
+}: {
+  label: string;
+  values: string[];
+  name: string;
+  undertext: string | null;
+  error?: string;
+}) {
+  const [item, setItem] = useState(() =>
+    typeof window !== 'undefined' ? (localStorage.getItem(name) ?? '') : '',
+  );
+
+  useEffect(() => {
+    localStorage.setItem(name, item);
+  }, [item, name]);
+
+  return (
+    <div className='flex flex-col'>
+      <label className='pb-1'>{label}</label>
+      <select
+        className={`rounded-md border px-3 py-2 ${error ? 'border-red-400' : 'border-gray-300'}`}
+        name={name}
+        value={item}
+        onChange={(event) => setItem(event.target.value)}
+      >
+        {values.map((e) => (
+          <option
+            key={e}
+            value={e}
+          >
+            {e}
+          </option>
+        ))}
+      </select>
+      {undertext && <span className='pt-1 text-sm text-gray-400'>{undertext}</span>}
+      {error && <span className='pt-0.5 text-sm text-red-500'>{error}</span>}
+    </div>
+  );
+}
+
 export function LongField({
   label,
   placeholder,
@@ -69,7 +114,7 @@ export function LongField({
     <div className='flex flex-col'>
       <label className='pb-1'>{label}</label>
       <textarea
-        className={`w-full min-h-40 resize-y rounded-md border px-3 py-2 align-top ${error ? 'border-red-400' : 'border-gray-300'}`}
+        className={`min-h-40 w-full resize-y rounded-md border px-3 py-2 align-top ${error ? 'border-red-400' : 'border-gray-300'}`}
         name={name}
         placeholder={placeholder}
         value={item}
@@ -256,6 +301,62 @@ export function UploadField({
   );
 }
 
+export function TagField({
+  label,
+  tags,
+  name,
+  undertext,
+  error,
+}: {
+  label: string;
+  tags: string[];
+  name: string;
+  undertext?: string | null;
+  error?: string;
+}) {
+  const [selected, setSelected] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      return JSON.parse(localStorage.getItem(name) ?? '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(name, JSON.stringify(selected));
+  }, [selected, name]);
+
+  function toggle(tag: string) {
+    setSelected((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
+  }
+
+  return (
+    <div className='flex flex-col gap-2'>
+      <label>{label}</label>
+      <div className='flex flex-row flex-wrap gap-2'>
+        {tags.map((tag) => (
+          <button
+            key={tag}
+            type='button'
+            onClick={() => toggle(tag)}
+            className={`rounded-full border px-5 py-2.5 text-base font-medium transition-colors ${
+              selected.includes(tag)
+                ? 'border-cyan-900 bg-cyan-900 text-white'
+                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+      {undertext && <span className='text-sm text-gray-400'>{undertext}</span>}
+      {error && <span className='text-sm text-red-500'>{error}</span>}
+      <input type='hidden' name={name} value={JSON.stringify(selected)} />
+    </div>
+  );
+}
+
 export function SwitchField({
   label,
   options,
@@ -293,13 +394,13 @@ export function SwitchField({
   return (
     <div className='flex flex-col gap-1'>
       {label && <label className='pb-1'>{label}</label>}
-      <div className='flex w-fit overflow-hidden rounded-full border border-gray-300'>
+      <div className='flex w-full overflow-hidden rounded-full border border-gray-300'>
         {options.map((option, index) => (
           <button
             key={option}
             type='button'
             onClick={() => handleSelect(index)}
-            className={`px-5 py-2 text-sm font-medium transition-colors ${
+            className={`flex-1 px-6 py-2 text-base font-medium transition-colors ${
               selected === index
                 ? 'bg-cyan-900 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-50'

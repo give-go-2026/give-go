@@ -3,7 +3,7 @@ import Forms from '@/components/create/forms';
 
 export default function CreateFormPage() {
   return (
-    <div className='min-h-screen overflow-y-auto'>
+    <div className='min-h-screen'>
       <Header text='Esemény hirdetés létrehozása' />
       <Forms />
     </div>

@@ -2,6 +2,8 @@
 
 import { z } from 'zod';
 import Button from '@repo/ui/button';
+
+const isDev = process.env.NODE_ENV === 'development';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import FormOne from './form-one';
@@ -44,6 +46,7 @@ export default function Forms() {
   }
 
   function validateFirst(): FieldErrors {
+    if (isDev) return {};
     const errs: FieldErrors = {};
 
     const result = firstSchema.safeParse({
@@ -63,16 +66,21 @@ export default function Forms() {
   }
 
   function validateSecond(): FieldErrors {
+    if (isDev) return {};
     const errs: FieldErrors = {};
 
     const base = z
       .object({
         eventName: z.string().min(1, 'Esemény neve kötelező!'),
         eventAddress: z.string().min(1, 'Esemény helyszíne kötelező!'),
+        eventTheme: z.string().min(1, 'Támogatott téma kötelező!'),
+        eventType: z.string().min(1, 'Munka típusa kötelező!'),
       })
       .safeParse({
         eventName: get('eventName'),
         eventAddress: get('eventAddress'),
+        eventTheme: get('eventTheme'),
+        eventType: get('eventType'),
       });
     if (!base.success) Object.assign(errs, zodToRecord(base.error));
 
@@ -132,10 +140,14 @@ export default function Forms() {
       }
     }
 
+    const eventTags: string[] = JSON.parse(get('eventTags') || '[]');
+    if (eventTags.length === 0) errs['eventTags'] = 'Válassz legalább egy célcsoportot!';
+
     return errs;
   }
 
   function validateThird(): FieldErrors {
+    if (isDev) return {};
     const errs: FieldErrors = {};
 
     const result = thirdSchema.safeParse({ desc: get('desc') });
@@ -185,7 +197,7 @@ export default function Forms() {
   }
 
   return (
-    <section className='mx-auto flex w-full max-w-416 flex-col gap-4 px-3 py-4 md:gap-6 md:px-28 md:py-5'>
+    <section className='mx-auto flex w-full max-w-416 flex-col gap-4 px-3 py-4 md:gap-6 md:px-28 md:py-5 mb-30'>
       <div className='bg-background mb-5 -mt-34 flex w-full flex-col justify-between rounded-3xl px-4 py-6 shadow-xl shadow-black/15 md:-mb-11.5'>
         <div className='grid grid-cols-3 gap-5 text-center'>
           <div>
