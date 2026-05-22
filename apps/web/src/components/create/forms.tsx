@@ -2,10 +2,10 @@
 
 import { z } from 'zod';
 import Button from '@repo/ui/button';
-
-const isDev = process.env.NODE_ENV === 'development';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
+const isDev = process.env.NODE_ENV === 'development';
 import FormOne from './form-one';
 import FormTwo from './form-two';
 import FormThree from './form-three';

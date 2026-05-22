@@ -19,11 +19,11 @@ export default async function RegisterPage({
   const type = (await searchParams).type as RegistrationType | undefined;
   const success = (await searchParams).success === 'true';
 
-  if (type && !registrationtypes.includes(type)) {
+  if (type !== undefined && !registrationtypes.includes(type as RegistrationType)) {
     return redirect('/auth/register');
   }
 
-  if (success && type) {
+  if (success && type !== undefined) {
     return (
       <AuthPage>
         <AuthCard>
@@ -37,7 +37,7 @@ export default async function RegisterPage({
     <AuthPage>
       <AuthCard>
         <h1 className='text-3xl font-bold text-gray-800'>Regisztráció</h1>
-        {!type ? <NoTypeSelected /> : <RegistrationForm type={type} />}
+        {type === undefined ? <NoTypeSelected /> : <RegistrationForm type={type as RegistrationType} />}
         <span className='text-center text-gray-600'>
           Már van fiókod?{' '}
           <Link
