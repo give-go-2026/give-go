@@ -27,7 +27,7 @@ export default async function RegisterPage({
     return (
       <AuthPage>
         <AuthCard>
-          <RegistrationSuccess type={type} />
+          <RegistrationSuccess type={type as RegistrationType} />
         </AuthCard>
       </AuthPage>
     );
