@@ -54,7 +54,7 @@ function LoginCard() {
       >
         Bejelentkezés
       </Button>
-      <span className='text-center text-gray-600'>
+      {/* <span className='text-center text-gray-600'>
         Nincs fiókod?{' '}
         <Link
           href='/auth/register'
@@ -62,7 +62,7 @@ function LoginCard() {
         >
           Regisztrálj most!
         </Link>
-      </span>
+      </span> */}
     </Fragment>
   );
 }

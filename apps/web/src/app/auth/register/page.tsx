@@ -5,12 +5,17 @@ import Button from '@repo/ui/button';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Fragment } from 'react';
+import { notFound } from 'next/navigation';
 
 export default async function RegisterPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  // Keep this file in the repo but make the route inaccessible by
+  // returning a 404 for all requests. Remove this guard to restore the route.
+  notFound();
+
   const type = (await searchParams).type as RegistrationType | undefined;
   const success = (await searchParams).success === 'true';
 

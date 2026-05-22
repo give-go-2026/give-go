@@ -9,6 +9,7 @@ import { useState } from 'react';
 import FormOne from './form-one';
 import FormTwo from './form-two';
 import FormThree from './form-three';
+import Link from 'next/link';
 
 type FieldErrors = Record<string, string>;
 
@@ -121,11 +122,8 @@ export default function Forms() {
       if (selectedDays.length === 0) {
         errs['selectedDays'] = 'Válasszon legalább egy ismétlődési napot!';
       } else if (differentTimes) {
-        const anyMissing = selectedDays.some(
-          (i) => !get(`startTime_${i}`) || !get(`endTime_${i}`),
-        );
-        if (anyMissing)
-          errs['perDayTimes'] = 'Minden kiválasztott napra add meg az időpontokat!';
+        const anyMissing = selectedDays.some((i) => !get(`startTime_${i}`) || !get(`endTime_${i}`));
+        if (anyMissing) errs['perDayTimes'] = 'Minden kiválasztott napra add meg az időpontokat!';
       } else {
         const times = z
           .object({
@@ -177,6 +175,7 @@ export default function Forms() {
       setSummaryErrors(summary);
 
       if (Object.keys(errs3).length === 0 && summary.length === 0) {
+        //TODO: localstorage -> sessionstorage || clear localstorage
         router.push('/create/success');
       }
     } else if (page === 1) {
@@ -197,8 +196,8 @@ export default function Forms() {
   }
 
   return (
-    <section className='mx-auto flex w-full max-w-416 flex-col gap-4 px-3 py-4 md:gap-6 md:px-28 md:py-5 mb-30'>
-      <div className='bg-background mb-5 -mt-34 flex w-full flex-col justify-between rounded-3xl px-4 py-6 shadow-xl shadow-black/15 md:-mb-11.5'>
+    <section className='mx-auto mb-30 flex w-full max-w-416 flex-col gap-4 px-3 py-4 md:gap-6 md:px-28 md:py-5'>
+      <div className='bg-background -mt-34 mb-5 flex w-full flex-col justify-between rounded-3xl px-4 py-6 shadow-xl shadow-black/15 md:-mb-11.5'>
         <div className='grid grid-cols-3 gap-5 text-center'>
           <div>
             <p className={`mb-2 ${page === 0 ? 'text-cyan-800' : undefined}`}>Szervezet adatai</p>
@@ -251,7 +250,18 @@ export default function Forms() {
               Vissza
             </button>
           </div>
-          <div className='w-max'>
+          <div className='flex w-max items-center justify-center gap-5'>
+            {
+              //TODO: Bejelentkezés után autómatikusan kitölteni a mezőket
+              page == 0 ? (
+                <Link
+                  href='/auth/login'
+                  className='font-bold'
+                >
+                  Bejelentkezés
+                </Link>
+              ) : undefined
+            }
             <Button
               styleType='primary'
               styleVariant='filled'
