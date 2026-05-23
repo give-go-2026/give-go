@@ -5,6 +5,7 @@ export default function NavLinks() {
   return (
     <Fragment>
       <Link href='#'>Elérhetőségek</Link>
+      <Link href='/dashboard'>Irányítópult</Link>
       {/* <Link href='#'>Kapcsolat</Link>
       <Link href='#'>Hiba bejelentő</Link>
       <Link href='#'>Rólunk</Link>
