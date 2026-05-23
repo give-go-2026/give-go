@@ -1,35 +1,36 @@
 # Give & Go
 
-## Installation
+## Prerequisites
 
-### Prerequisites
+- **Docker**
 
-- **Node.js** (v24+) or **Bun** (v1.3.4+)
+## Getting started
 
-### Using Node.js
+Fill in `apps/web/.env` with your `NEON_API_KEY` and `NEON_PROJECT_ID`, then:
 
 ```bash
-# Clone the repository
 git clone https://github.com/hrustinszkiadam/give-n-go.git
 cd give-n-go
 
-# Install dependencies
-npm install
-
-# Start the project
-npm run dev
+docker compose up -d
 ```
 
-### Using Bun
+App runs at `http://localhost:3000`.
+
+## Schema changes
+
+Run this after pulling changes that include schema updates, or after writing new ones:
 
 ```bash
-# Clone the repository
-git clone https://github.com/hrustinszkiadam/give-n-go.git
-cd give-n-go
+docker compose exec web bun --filter web run db:push
+```
 
-# Install dependencies
-bun install
+## Production
 
-# Start the project
-bun dev
+Deployed automatically via Vercel on push to `main`.
+
+Schema migrations against prod are manual and intentional — swap in the prod `DATABASE_URL` locally and run:
+
+```bash
+bun --filter web run db:push
 ```
