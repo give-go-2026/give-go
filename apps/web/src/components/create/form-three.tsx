@@ -8,7 +8,7 @@ export default function FormThree({ errors }: { errors: Record<string, string> }
           label='Esemény leírása'
           placeholder='Maximum 1000 karakterben írd meg mi lenne a feladat amiben segítséget kérsz. Érdemes lehet itt leírni, hogyan készüljenek az önkéntesek, mit hozzanak magukkal, mire számíthatnak. Van-e valamilyen különleges helyezet, amire készüljenek az önkéntesek stb.'
           name='desc'
-          undertext={'asd'}
+          undertext={null}
           error={errors['desc']}
         />
         <UploadField
