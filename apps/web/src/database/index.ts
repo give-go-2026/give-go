@@ -1,13 +1,12 @@
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon, neonConfig } from '@neondatabase/serverless';
-import { env } from '@/lib/env';
+import { drizzle as drizzleNeon } from 'drizzle-orm/neon-http';
+import { drizzle as drizzlePg } from 'drizzle-orm/postgres-js';
+import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 import * as schema from './schema';
 
-if (process.env.NEON_LOCAL === 'true') {
-  neonConfig.fetchEndpoint = 'http://localhost:5432/sql';
-  neonConfig.useSecureWebSocket = false;
-  neonConfig.poolQueryViaFetch = true;
-}
+const url = process.env.DATABASE_URL!;
 
-const sql = neon(env.DATABASE_URL);
-export const db = drizzle({ client: sql, schema, casing: 'snake_case' });
+export const db =
+  process.env.NEON_LOCAL === 'true'
+    ? drizzlePg(postgres(url, { ssl: false }), { schema, casing: 'snake_case' })
+    : drizzleNeon({ client: neon(url), schema, casing: 'snake_case' });
