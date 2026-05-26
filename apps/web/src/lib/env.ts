@@ -6,6 +6,7 @@ export const env = createEnv({
     DEV_ORIGINS: z.string().optional(),
     DATABASE_URL: z.string().nonempty(),
     RESEND_API_KEY: z.string().nonempty(),
+    AUTH_SECRET: z.string().min(32),
   },
   client: {
     NEXT_PUBLIC_PRODUCT_NAME: z.string().default('Give&Go'),
@@ -15,5 +16,6 @@ export const env = createEnv({
     DEV_ORIGINS: process.env.DEV_ORIGINS,
     DATABASE_URL: process.env.DATABASE_URL,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
+    AUTH_SECRET: process.env.AUTH_SECRET,
   },
 });
