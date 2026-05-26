@@ -1,6 +1,6 @@
 export default function Description() {
   return (
-    <article>
+    <article className='ml-5'>
       <h2 className='mb-2 text-xl font-bold'>Hogyan tudsz segíteni?</h2>
       <p>
         Böngéssz az összes lehetőség között, vagy szűrj saját preferenciád szerint. A Részletek
