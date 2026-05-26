@@ -5,7 +5,14 @@ import { db } from '@/database';
 import * as schema from '@/database/schema';
 import { env } from './env';
 
+const baseURL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
+
 export const auth = betterAuth({
+  baseURL,
   secret: env.AUTH_SECRET,
   database: drizzleAdapter(db, {
     provider: 'pg',
