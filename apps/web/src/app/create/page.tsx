@@ -1,18 +1,22 @@
-export const dynamic = 'force-dynamic';
-
+import { Suspense } from 'react';
 import Header from '@/components/create/header';
 import Forms from '@/components/create/forms';
 import { AuthGate } from '@/components/auth/gate';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 
-export default async function CreateFormPage() {
+async function CreateContent() {
   const session = await auth.api.getSession({ headers: await headers() });
+  return session?.user ? <Forms startAtEventDetails /> : <AuthGate />;
+}
 
+export default function CreateFormPage() {
   return (
     <div className='min-h-screen'>
       <Header text='Esemény hirdetés létrehozása' />
-      {session?.user ? <Forms startAtEventDetails /> : <AuthGate />}
+      <Suspense>
+        <CreateContent />
+      </Suspense>
     </div>
   );
 }
