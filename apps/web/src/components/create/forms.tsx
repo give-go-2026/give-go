@@ -27,9 +27,9 @@ const thirdSchema = z.object({
   desc: z.string().min(1, 'Leírás kötelező!').max(1000, 'Leírás maximum 1000 karakter lehet!'),
 });
 
-export default function Forms() {
+export default function Forms({ startAtEventDetails = false }: { startAtEventDetails?: boolean }) {
   const router = useRouter();
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(startAtEventDetails ? 1 : 0);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [summaryErrors, setSummaryErrors] = useState<string[]>([]);
 
@@ -162,7 +162,7 @@ export default function Forms() {
     setSummaryErrors([]);
 
     if (page === 2) {
-      const errs1 = validateFirst();
+      const errs1 = startAtEventDetails ? {} : validateFirst();
       const errs2 = validateSecond();
       const errs3 = validateThird();
 
@@ -242,7 +242,7 @@ export default function Forms() {
               onClick={() => {
                 setFieldErrors({});
                 setSummaryErrors([]);
-                if (page === 0) router.push('/create/info');
+                if (page === 0 || (page === 1 && startAtEventDetails)) router.push('/create/info');
                 else setPage(page - 1);
               }}
               className='border-0 bg-transparent p-0'
@@ -251,17 +251,14 @@ export default function Forms() {
             </button>
           </div>
           <div className='flex w-max items-center justify-center gap-5'>
-            {
-              //TODO: Bejelentkezés után autómatikusan kitölteni a mezőket
-              page == 0 ? (
-                <Link
-                  href='/auth/login'
-                  className='font-bold'
-                >
-                  Bejelentkezés
-                </Link>
-              ) : undefined
-            }
+            {!startAtEventDetails && page === 0 ? (
+              <Link
+                href='/auth/login'
+                className='font-bold'
+              >
+                Bejelentkezés
+              </Link>
+            ) : undefined}
             <Button
               styleType='primary'
               styleVariant='filled'
