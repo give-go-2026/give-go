@@ -4,7 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "env": ["DEV_ORIGINS", "DATABASE_URL", "RESEND_API_KEY", "NODE_ENV"],
+      "env": ["DEV_ORIGINS", "DATABASE_URL", "RESEND_API_KEY", "NODE_ENV", "AUTH_SECRET"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
