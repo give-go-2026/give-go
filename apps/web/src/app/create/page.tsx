@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Header from '@/components/create/header';
 import Forms from '@/components/create/forms';
 import { AuthGate } from '@/components/auth/gate';
