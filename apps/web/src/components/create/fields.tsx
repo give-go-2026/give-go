@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-type FormFieldType = 'number' | 'string';
+type FormFieldType = 'number' | 'string' | 'time';
 
 export function FormField({
   label,
@@ -20,11 +20,11 @@ export function FormField({
   error?: string;
 }) {
   const [item, setItem] = useState(() =>
-    typeof window !== 'undefined' ? (localStorage.getItem(name) ?? '') : '',
+    typeof window !== 'undefined' ? (sessionStorage.getItem(name) ?? '') : '',
   );
 
   useEffect(() => {
-    localStorage.setItem(name, item);
+    sessionStorage.setItem(name, item);
   }, [item, name]);
 
   return (
@@ -33,7 +33,7 @@ export function FormField({
       <input
         className={`rounded-md border px-3 py-2 ${error ? 'border-red-400' : 'border-gray-300'}`}
         name={name}
-        type={type === 'number' ? 'number' : 'text'}
+        type={type}
         placeholder={placeholder}
         value={item}
         onChange={(event) => setItem(event.target.value)}
@@ -58,11 +58,11 @@ export function ListField({
   error?: string;
 }) {
   const [item, setItem] = useState(() =>
-    typeof window !== 'undefined' ? (localStorage.getItem(name) ?? '') : '',
+    typeof window !== 'undefined' ? (sessionStorage.getItem(name) ?? '') : '',
   );
 
   useEffect(() => {
-    localStorage.setItem(name, item);
+    sessionStorage.setItem(name, item);
   }, [item, name]);
 
   return (
@@ -103,11 +103,11 @@ export function LongField({
   error?: string;
 }) {
   const [item, setItem] = useState(() =>
-    typeof window !== 'undefined' ? (localStorage.getItem(name) ?? '') : '',
+    typeof window !== 'undefined' ? (sessionStorage.getItem(name) ?? '') : '',
   );
 
   useEffect(() => {
-    localStorage.setItem(name, item);
+    sessionStorage.setItem(name, item);
   }, [item, name]);
 
   return (
@@ -174,13 +174,13 @@ export function UploadField({
     if (typeof window === 'undefined') return [];
     if (multiple) {
       try {
-        const saved: string[] = JSON.parse(localStorage.getItem(name) ?? '[]');
+        const saved: string[] = JSON.parse(sessionStorage.getItem(name) ?? '[]');
         return saved.map((n) => ({ name: n, size: 0 }));
       } catch {
         return [];
       }
     } else {
-      const saved = localStorage.getItem(name) ?? '';
+      const saved = sessionStorage.getItem(name) ?? '';
       return saved ? [{ name: saved, size: 0 }] : [];
     }
   });
@@ -188,7 +188,7 @@ export function UploadField({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    localStorage.setItem(
+    sessionStorage.setItem(
       name,
       multiple ? JSON.stringify(files.map((f) => f.name)) : (files[0]?.name ?? ''),
     );
@@ -317,14 +317,14 @@ export function TagField({
   const [selected, setSelected] = useState<string[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
-      return JSON.parse(localStorage.getItem(name) ?? '[]');
+      return JSON.parse(sessionStorage.getItem(name) ?? '[]');
     } catch {
       return [];
     }
   });
 
   useEffect(() => {
-    localStorage.setItem(name, JSON.stringify(selected));
+    sessionStorage.setItem(name, JSON.stringify(selected));
   }, [selected, name]);
 
   function toggle(tag: string) {
@@ -352,7 +352,11 @@ export function TagField({
       </div>
       {undertext && <span className='text-sm text-gray-400'>{undertext}</span>}
       {error && <span className='text-sm text-red-500'>{error}</span>}
-      <input type='hidden' name={name} value={JSON.stringify(selected)} />
+      <input
+        type='hidden'
+        name={name}
+        value={JSON.stringify(selected)}
+      />
     </div>
   );
 }
@@ -374,7 +378,7 @@ export function SwitchField({
 }) {
   const [selected, setSelected] = useState(() => {
     if (typeof window === 'undefined') return defaultIndex;
-    const saved = localStorage.getItem(name);
+    const saved = sessionStorage.getItem(name);
     if (saved) {
       const idx = options.indexOf(saved);
       return idx >= 0 ? idx : defaultIndex;
@@ -383,7 +387,7 @@ export function SwitchField({
   });
 
   useEffect(() => {
-    localStorage.setItem(name, options[selected] ?? '');
+    sessionStorage.setItem(name, options[selected] ?? '');
   }, [selected, name, options]);
 
   function handleSelect(index: number) {

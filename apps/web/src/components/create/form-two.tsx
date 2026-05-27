@@ -8,27 +8,27 @@ const DAYS = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat',
 export default function FormTwo({ errors }: { errors: Record<string, string> }) {
   const [frequencyIndex, setFrequencyIndex] = useState(() => {
     if (typeof window === 'undefined') return 0;
-    return localStorage.getItem('helpFrequency') === 'Egyszeri' ? 1 : 0;
+    return sessionStorage.getItem('helpFrequency') === 'Egyszeri' ? 1 : 0;
   });
   const [selectedDays, setSelectedDays] = useState<number[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
-      return JSON.parse(localStorage.getItem('selectedDays') ?? '[]');
+      return JSON.parse(sessionStorage.getItem('selectedDays') ?? '[]');
     } catch {
       return [];
     }
   });
   const [differentTimes, setDifferentTimes] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return localStorage.getItem('differentTimes') === 'true';
+    return sessionStorage.getItem('differentTimes') === 'true';
   });
 
   useEffect(() => {
-    localStorage.setItem('selectedDays', JSON.stringify(selectedDays));
+    sessionStorage.setItem('selectedDays', JSON.stringify(selectedDays));
   }, [selectedDays]);
 
   useEffect(() => {
-    localStorage.setItem('differentTimes', String(differentTimes));
+    sessionStorage.setItem('differentTimes', String(differentTimes));
   }, [differentTimes]);
 
   function toggleDay(index: number) {
@@ -225,14 +225,14 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
                     <FormField
                       label='Kezdés időpontja'
                       placeholder='pl.: 10:00'
-                      type='string'
+                      type='time'
                       name={`startTime_${dayIndex}`}
                       undertext={null}
                     />
                     <FormField
                       label='Zárás időpontja'
                       placeholder='pl.: 17:00'
-                      type='string'
+                      type='time'
                       name={`endTime_${dayIndex}`}
                       undertext={null}
                     />
@@ -247,7 +247,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
               <FormField
                 label='Kezdés időpontja'
                 placeholder='pl.: 10:00'
-                type='string'
+                type='time'
                 name='startTime'
                 undertext={null}
                 error={errors['startTime']}
@@ -255,7 +255,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
               <FormField
                 label='Zárás időpontja'
                 placeholder='pl.: 17:00'
-                type='string'
+                type='time'
                 name='endTime'
                 undertext={null}
                 error={errors['endTime']}

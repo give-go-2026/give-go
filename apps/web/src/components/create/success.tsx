@@ -33,7 +33,10 @@ export default function Success() {
               styleType='primary'
               styleVariant='filled'
               fill={true}
-              onClick={() => router.push('/')}
+              onClick={() => {
+                sessionStorage.clear();
+                router.push('/');
+              }}
             >
               Vissza a főoldalra
             </Button>

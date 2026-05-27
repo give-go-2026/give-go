@@ -33,8 +33,20 @@ export function AuthGate() {
   );
 }
 
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className='mt-1 text-xs text-red-500'>{message}</p>;
+}
+
+function inputClass(hasError?: string) {
+  return `focus:border-foreground w-full rounded-md border px-3 py-2 focus:outline-none ${
+    hasError ? 'border-red-400 bg-red-50' : 'border-gray-300'
+  }`;
+}
+
 function GateLoginForm() {
   const [state, action, isPending] = useActionState(loginAction, null);
+  const fe = state?.fieldErrors ?? {};
 
   return (
     <form
@@ -49,10 +61,11 @@ function GateLoginForm() {
         <input
           type='email'
           name='email'
-          className='focus:border-foreground w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none'
+          className={inputClass(fe.email)}
           placeholder='pelda@gmail.com'
           autoComplete='email'
         />
+        <FieldError message={fe.email} />
       </label>
       <label>
         <span className='mb-1 block text-sm font-medium text-gray-700'>Jelszó</span>
@@ -60,9 +73,10 @@ function GateLoginForm() {
           type='password'
           name='password'
           placeholder='••••••••'
-          className='focus:border-foreground w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none'
+          className={inputClass(fe.password)}
           autoComplete='current-password'
         />
+        <FieldError message={fe.password} />
       </label>
       {state?.error && <p className='text-sm text-red-500'>{state.error}</p>}
       <Link
@@ -87,6 +101,7 @@ function GateLoginForm() {
 
 function GateRegisterForm() {
   const [state, action, isPending] = useActionState(registerOrgAction, null);
+  const fe = state?.fieldErrors ?? {};
 
   return (
     <form
@@ -100,19 +115,21 @@ function GateRegisterForm() {
           <input
             type='text'
             name='orgName'
-            className='focus:border-foreground w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none'
+            className={inputClass(fe.orgName)}
             placeholder='pl.: Máltai szeretet szolgálat'
           />
+          <FieldError message={fe.orgName} />
         </label>
         <label>
           <span className='mb-1 block text-sm font-medium text-gray-700'>E-mail cím</span>
           <input
             type='email'
             name='email'
-            className='focus:border-foreground w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none'
+            className={inputClass(fe.email)}
             placeholder='pelda@gmail.com'
             autoComplete='email'
           />
+          <FieldError message={fe.email} />
         </label>
         <label>
           <span className='mb-1 block text-sm font-medium text-gray-700'>Jelszó</span>
@@ -120,9 +137,10 @@ function GateRegisterForm() {
             type='password'
             name='password'
             placeholder='••••••••'
-            className='focus:border-foreground w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none'
+            className={inputClass(fe.password)}
             autoComplete='new-password'
           />
+          <FieldError message={fe.password} />
         </label>
         <label>
           <span className='mb-1 block text-sm font-medium text-gray-700'>
@@ -131,9 +149,10 @@ function GateRegisterForm() {
           <input
             type='text'
             name='orgNum'
-            className='focus:border-foreground w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none'
+            className={inputClass(fe.orgNum)}
             placeholder='pl.: 01-01-0001234'
           />
+          <FieldError message={fe.orgNum} />
         </label>
         <label>
           <span className='mb-1 block text-sm font-medium text-gray-700'>Weboldal</span>
@@ -151,9 +170,10 @@ function GateRegisterForm() {
           <input
             type='text'
             name='userName'
-            className='focus:border-foreground w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none'
+            className={inputClass(fe.userName)}
             placeholder='pl.: Kiss József'
           />
+          <FieldError message={fe.userName} />
         </label>
         <label>
           <span className='mb-1 block text-sm font-medium text-gray-700'>Telefonszám</span>

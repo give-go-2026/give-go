@@ -33,9 +33,10 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
   const [page, setPage] = useState(startAtEventDetails ? 1 : 0);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [summaryErrors, setSummaryErrors] = useState<string[]>([]);
+  const [resetKey, setResetKey] = useState(0);
 
   function get(key: string) {
-    return localStorage.getItem(key) ?? '';
+    return sessionStorage.getItem(key) ?? '';
   }
 
   function zodToRecord(error: z.ZodError): FieldErrors {
@@ -233,13 +234,13 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
   return (
     <section className='mx-auto mb-30 flex w-full max-w-416 flex-col gap-4 px-3 py-4 md:gap-6 md:px-28 md:py-5'>
       <div className='bg-background -mt-34 mb-5 flex w-full flex-col justify-between rounded-3xl px-4 py-6 shadow-xl shadow-black/15 md:-mb-11.5'>
-        <div className='grid grid-cols-3 gap-5 text-center'>
-          <div>
+        <div className='grid grid-cols-2 gap-5 text-center'>
+          {/* <div>
             <p className={`mb-2 ${page === 0 ? 'text-cyan-800' : undefined}`}>Szervezet adatai</p>
             <div
               className={`h-1 w-full rounded-3xl border ${page === 0 ? 'border-cyan-300 bg-cyan-300' : 'border-gray-300 bg-gray-300'}`}
             ></div>
-          </div>
+          </div> */}
           <div>
             <p className={`mb-2 ${page === 1 ? 'text-cyan-800' : undefined}`}>Esemény Adatai</p>
             <div
@@ -254,13 +255,15 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           </div>
         </div>
 
-        {page === 0 ? (
-          <FormOne errors={fieldErrors} />
-        ) : page === 1 ? (
-          <FormTwo errors={fieldErrors} />
-        ) : (
-          <FormThree errors={fieldErrors} />
-        )}
+        <div key={resetKey}>
+          {page === 0 ? (
+            <FormOne errors={fieldErrors} />
+          ) : page === 1 ? (
+            <FormTwo errors={fieldErrors} />
+          ) : (
+            <FormThree errors={fieldErrors} />
+          )}
+        </div>
 
         {summaryErrors.length > 0 && (
           <ul className='mt-4 flex flex-col gap-1 text-sm text-red-500'>
@@ -294,6 +297,19 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
                 Bejelentkezés
               </Link>
             ) : undefined}
+            <Button
+              styleType='primary'
+              styleVariant='filled'
+              fill={true}
+              onClick={() => {
+                sessionStorage.clear();
+                setFieldErrors({});
+                setSummaryErrors([]);
+                setResetKey((k) => k + 1);
+              }}
+            >
+              Törlés
+            </Button>
             <Button
               styleType='primary'
               styleVariant='filled'
