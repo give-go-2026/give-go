@@ -1,4 +1,4 @@
-import { placeHolderCards } from './placeholder-data';
+import { getEventById } from '@/features/events/lib/queries';
 
 const removeSpacesAfterDots = (value: string): string => value.replace(/\.(?=\s.*\.)\s/g, '.');
 
@@ -28,6 +28,5 @@ export const formatDuration = (start: Date, end: Date): string => {
 };
 
 export const fetchCardById = async (id: number) => {
-  const card = placeHolderCards.find((card) => card.id === id);
-  return card || null;
+  return getEventById(id);
 };
