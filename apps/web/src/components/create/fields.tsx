@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-type FormFieldType = 'number' | 'string' | 'time';
+type FormFieldType = 'number' | 'string' | 'time' | 'date';
 
 export function FormField({
   label,

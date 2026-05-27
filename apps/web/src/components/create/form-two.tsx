@@ -124,7 +124,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
               <FormField
                 label='Esemény kezdő dátuma'
                 placeholder='pl.: 2025.16.12.'
-                type='string'
+                type='date'
                 name='eventStartDate'
                 undertext={null}
                 error={errors['eventStartDate']}
@@ -133,7 +133,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
             <FormField
               label='Kezdés időpontja'
               placeholder='pl.: 10:00'
-              type='string'
+              type='time'
               name='eventStartTime'
               undertext={null}
               error={errors['eventStartTime']}
@@ -141,7 +141,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
             <FormField
               label='Záró időpontja'
               placeholder='pl.: 10:00'
-              type='string'
+              type='time'
               name='eventEndTime'
               undertext={null}
               error={errors['eventEndTime']}
@@ -152,7 +152,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
               <FormField
                 label='Esemény záró dátuma'
                 placeholder='pl.: 2025.16.12.'
-                type='string'
+                type='date'
                 name='eventEndDate'
                 undertext={null}
                 error={errors['eventEndDate']}
@@ -161,7 +161,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
             <FormField
               label='Zárás időpontja'
               placeholder='pl.: 17:00'
-              type='string'
+              type='time'
               name='eventCloseTime'
               undertext={null}
               error={errors['eventCloseTime']}
@@ -174,7 +174,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
             <FormField
               label='Esemény sorozat kezdete'
               placeholder='pl.: 2025.16.12.'
-              type='string'
+              type='date'
               name='seriesStartDate'
               undertext={null}
               error={errors['seriesStartDate']}
@@ -182,7 +182,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
             <FormField
               label='Esemény sorozat záródátuma'
               placeholder='pl.: 2025.16.12.'
-              type='string'
+              type='date'
               name='seriesEndDate'
               undertext={null}
               error={errors['seriesEndDate']}
