@@ -152,9 +152,6 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
     const result = thirdSchema.safeParse({ desc: get('desc') });
     if (!result.success) Object.assign(errs, zodToRecord(result.error));
 
-    if (JSON.parse(get('eventImages') || '[]').length === 0)
-      errs['eventImages'] = 'Legalább egy kép feltöltése kötelező!';
-
     return errs;
   }
 
