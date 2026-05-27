@@ -4,10 +4,13 @@ import Forms from '@/components/create/forms';
 import { AuthGate } from '@/components/auth/gate';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 async function CreateContent() {
   const session = await auth.api.getSession({ headers: await headers() });
-  return session?.user ? <Forms startAtEventDetails /> : <AuthGate />;
+  if (!session?.user) return <AuthGate />;
+  if (session.user.role !== 'org') redirect('/events');
+  return <Forms startAtEventDetails />;
 }
 
 export default function CreateFormPage() {

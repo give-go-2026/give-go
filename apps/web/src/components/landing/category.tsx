@@ -2,23 +2,11 @@ import { categoryTitleLookup } from '@/lib/constants';
 import { type GroupingCategory } from '@/lib/definitions';
 import Link from 'next/link';
 import Card from './card';
-import { placeHolderCards } from '@/lib/placeholder-data';
+import { getEventsByCategory } from '@/features/events/lib/queries';
 
-const getCardsByCategory = (category: GroupingCategory) => {
-  switch (category) {
-    case 'upcoming':
-      return placeHolderCards.slice(0, 3);
-    case 'permanent':
-      return placeHolderCards.slice(3, 6);
-    case 'popular':
-      return placeHolderCards.slice(6, 9);
-    default:
-      return placeHolderCards;
-  }
-};
-
-export default function Category({ category }: { category: GroupingCategory }) {
-  const cards = getCardsByCategory(category);
+export default async function Category({ category }: { category: GroupingCategory }) {
+  const cards = await getEventsByCategory(category);
+  if (cards.length === 0) return null;
   return (
     <article className='flex flex-col'>
       <h3 className='ml-5 text-2xl font-semibold md:text-3xl'>{categoryTitleLookup[category]}</h3>

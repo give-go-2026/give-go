@@ -4,6 +4,7 @@ import { z } from 'zod';
 import Button from '@repo/ui/button';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { createEventAction } from '@/features/events/lib/actions';
 
 const isDev = process.env.NODE_ENV === 'development';
 import FormOne from './form-one';
@@ -157,7 +158,7 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
     return errs;
   }
 
-  function Next() {
+  async function Next() {
     setFieldErrors({});
     setSummaryErrors([]);
 
@@ -175,8 +176,45 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
       setSummaryErrors(summary);
 
       if (Object.keys(errs3).length === 0 && summary.length === 0) {
-        //TODO: localstorage -> sessionstorage || clear localstorage
-        router.push('/create/success');
+        const frequency = get('helpFrequency') || 'Rendszeres';
+        const isRecurring = frequency === 'Rendszeres';
+        const selectedDays: number[] = JSON.parse(get('selectedDays') || '[]');
+        const differentTimes = get('differentTimes') === 'true';
+
+        const perDayTimes: Record<string, { start: string; end: string }> = {};
+        if (isRecurring && differentTimes) {
+          for (const day of selectedDays) {
+            perDayTimes[String(day)] = {
+              start: get(`startTime_${day}`),
+              end: get(`endTime_${day}`),
+            };
+          }
+        }
+
+        const result = await createEventAction({
+          eventName: get('eventName'),
+          eventAddress: get('eventAddress'),
+          eventTheme: get('eventTheme'),
+          eventType: (get('eventType') || 'fizikai') as 'fizikai' | 'szociális' | 'irodai',
+          eventTags: JSON.parse(get('eventTags') || '[]'),
+          helpFrequency: frequency,
+          helpMode: (get('helpMode') || 'Személyes') as 'Online' | 'Személyes' | 'Hibrid',
+          desc: get('desc'),
+          eventStartDate: get('eventStartDate') || undefined,
+          eventStartTime: get('eventStartTime') || undefined,
+          eventEndDate: get('eventEndDate') || undefined,
+          eventEndTime: get('eventEndTime') || undefined,
+          seriesStartDate: get('seriesStartDate') || undefined,
+          seriesEndDate: get('seriesEndDate') || undefined,
+          selectedDays: isRecurring ? selectedDays : undefined,
+          startTime: get('startTime') || undefined,
+          endTime: get('endTime') || undefined,
+          perDayTimes: Object.keys(perDayTimes).length > 0 ? perDayTimes : undefined,
+        });
+
+        if (result?.error) {
+          setSummaryErrors([result.error]);
+        }
       }
     } else if (page === 1) {
       const errs = validateSecond();
