@@ -20,6 +20,7 @@
     "@react-email/tailwind": "^2.0.7",
     "@repo/ui": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.10",
+    "better-auth": "^1.6.11",
     "drizzle-orm": "^0.45.2",
     "next": "16.2.0",
     "react": "19.2.1",
@@ -40,6 +41,7 @@
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.0",
+    "postgres": "^3.4.9",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

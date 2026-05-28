@@ -4,10 +4,12 @@ import { Fragment } from 'react';
 export default function NavLinks() {
   return (
     <Fragment>
-      <Link href='#'>Kapcsolat</Link>
+      <Link href='#'>Elérhetőségek</Link>
+      <Link href='/dashboard'>Irányítópult</Link>
+      {/* <Link href='#'>Kapcsolat</Link>
       <Link href='#'>Hiba bejelentő</Link>
       <Link href='#'>Rólunk</Link>
-      <Link href='/auth/login'>Bejelentkezés</Link>
+      <Link href='/auth/login'>Bejelentkezés</Link> */}
     </Fragment>
   );
 }

@@ -5,7 +5,7 @@ import { formatDuration } from '@/lib/utils';
 
 export default function Card({ card }: { card: EventCard }) {
   return (
-    <div className='h-133.75 max-h-133.75 w-75 max-w-75 snap-center rounded-3xl shadow-xl md:w-83.75 md:max-w-83.75'>
+    <div className='h-max max-h-133.75 w-full snap-center rounded-3xl shadow-xl'>
       <div className='flex h-full flex-col gap-2 overflow-clip rounded-3xl'>
         <Image
           src={card.image_url}
@@ -16,7 +16,7 @@ export default function Card({ card }: { card: EventCard }) {
         />
         <div className='flex flex-1 flex-col justify-center gap-1 p-4'>
           <div className='max-h-fit w-full snap-x snap-mandatory overflow-auto'>
-            <div className='grid h-full min-w-fit grid-flow-col place-content-between gap-2 pb-1'>
+            <div className='grid h-full min-w-fit grid-flow-col place-content-start gap-2 pb-1'>
               {card.tags.map((tag) => (
                 <span
                   key={tag.name}

@@ -10,7 +10,7 @@ export default function EventsPage() {
       <Header />
       <main className='mx-auto mt-22 max-w-416 px-3 md:mt-10 md:px-30 md:py-5'>
         <Description />
-        <section className='mt-8 flex flex-col gap-8 md:mt-4 md:gap-18'>
+        <section className='flex flex-col gap-8 pt-5 md:mt-4'>
           <Suspense fallback={<CategorySkeleton category='upcoming' />}>
             <Category category='upcoming' />
           </Suspense>

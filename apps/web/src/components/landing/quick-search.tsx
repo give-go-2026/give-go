@@ -18,8 +18,8 @@ export default function QuickSearchBar() {
   };
 
   return (
-    <div className='bg-background -mb-17.5 flex h-64 w-full flex-col items-center justify-between gap-4 rounded-3xl px-4 py-6 shadow-xl shadow-black/15 md:-mb-11.5 md:h-36 md:flex-row'>
-      <div className='flex max-h-fit w-full md:hidden'>
+    <div className='bg-background -mb-17.5 flex h-64 w-full flex-col items-center justify-between gap-4 rounded-3xl px-4 py-6 shadow-xl shadow-black/15 lg:-mb-11.5 lg:h-36 lg:flex-row'>
+      <div className='flex max-h-fit w-full lg:hidden'>
         <input
           type='text'
           placeholder='Keresés...'
@@ -34,7 +34,7 @@ export default function QuickSearchBar() {
           <MagnifyingGlassIcon className='h-5 w-5 text-white' />
         </div>
       </div>
-      <div className='flex max-h-fit w-full flex-col gap-2 md:mb-4 md:w-[32%]'>
+      <div className='flex max-h-fit w-full flex-col gap-2 lg:mb-4 lg:w-[32%]'>
         <span>Időpont választó</span>
         <div className='flex max-w-fit items-center gap-2'>
           <input
@@ -52,16 +52,16 @@ export default function QuickSearchBar() {
           />
         </div>
       </div>
-      <div className='mt-3 hidden max-h-fit w-[31%] md:flex'>
+      <div className='mt-3 hidden max-h-fit w-[31%] lg:flex'>
         <input
           type='text'
           placeholder='Keresés...'
-          className='w-full rounded-l-lg border border-gray-300 px-4 py-2 text-xl md:rounded-l-md'
+          className='w-full rounded-l-lg border border-gray-300 px-4 py-2 text-lg lg:rounded-l-xl'
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
         <div
-          className='bg-foreground hover:bg-foreground/90 cursor-pointer rounded-r-lg p-4 md:p-3'
+          className='bg-foreground hover:bg-foreground/90 cursor-pointer rounded-r-lg p-4 lg:p-3'
           onClick={handleSearch}
         >
           <MagnifyingGlassIcon className='h-5 w-5 text-white' />
@@ -69,7 +69,7 @@ export default function QuickSearchBar() {
       </div>
       <Link
         href='/events/search'
-        className='bg-foreground hover:bg-foreground/90 flex max-h-fit w-full flex-9 items-center justify-between gap-6 rounded-lg px-4 py-2 text-xl font-light text-white md:mt-3'
+        className='bg-foreground hover:bg-foreground/90 flex max-h-fit w-full flex-9 items-center justify-between gap-6 rounded-lg px-4 py-2 text-lg font-light text-white lg:mt-3'
       >
         <span>Részletes Kereső és Szűrő</span>
         <ArrowRightIcon className='h-5 w-6' />

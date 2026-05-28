@@ -33,7 +33,7 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
       lang='hu'
       suppressHydrationWarning
     >
-      <body className={`${roboto.variable} antialiased`}>{children}</body>
+      <body className={`${roboto.variable} antialiased`} suppressHydrationWarning>{children}</body>
     </html>
   );
 }

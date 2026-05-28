@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Give&amp;Go – Fejlesztői Dokumentáció</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:  #284b63;
+      --accent:   #60fcd2;
+      --accent2:  #98deec;
+      --muted:    #7e9fb6;
+      --light-bg: #f4f9fc;
+      --border:   #d0e4ef;
+      --text:     #1a2f3f;
+      --code-bg:  #eef5fa;
+      --radius:   6px;
+      --font:     'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text);
+      background: #fff;
+      padding: 0 24px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* ── Borító ── */
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+      background: linear-gradient(160deg, var(--accent) 0%, var(--accent2) 50%, #fff 100%);
+      margin: 0 -24px;
+      padding: 60px 24px;
+      page-break-after: always;
+    }
+    .cover .logo    { font-size: 56px; font-weight: 900; color: var(--primary); letter-spacing: -2px; margin-bottom: 8px; }
+    .cover .tagline { font-size: 20px; color: var(--primary); opacity: .75; margin-bottom: 36px; }
+    .cover .badge-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 44px; }
+    .badge { background: var(--primary); color: #fff; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .cover .meta { font-size: 13px; color: var(--primary); opacity: .6; }
+
+    /* ── Tartalom ── */
+    .toc { background: var(--light-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 34px; margin: 36px 0; }
+    .toc h2 { margin-bottom: 14px; color: var(--primary); }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin: 5px 0; }
+    .toc a { color: var(--primary); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .toc .sub { padding-left: 20px; font-size: 13px; }
+
+    /* ── Fejlécek ── */
+    h1.section-title {
+      font-size: 26px; color: var(--primary);
+      border-left: 5px solid var(--accent);
+      padding-left: 16px; margin: 48px 0 20px;
+    }
+    h2.sub-title { font-size: 18px; color: var(--primary); margin: 28px 0 10px; padding-bottom: 4px; border-bottom: 2px solid var(--border); }
+    h3.sub-sub   { font-size: 14px; color: var(--muted); margin: 18px 0 6px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
+
+    p { margin-bottom: 12px; }
+    ul, ol { margin: 0 0 12px 22px; }
+    li { margin: 4px 0; }
+
+    /* ── Info dobozok ── */
+    .info-box {
+      background: var(--light-bg); border-left: 4px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 16px; margin: 14px 0; font-size: 13px;
+    }
+    .warn-box {
+      background: #fffbea; border-left: 4px solid #f0c040;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 16px; margin: 14px 0; font-size: 13px;
+    }
+
+    /* ── Táblázatok ── */
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+    thead tr { background: var(--primary); color: #fff; }
+    thead th { padding: 9px 12px; text-align: left; font-weight: 600; }
+    tbody tr:nth-child(even) { background: var(--light-bg); }
+    tbody td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tbody tr:hover { background: #e8f3fa; }
+
+    /* ── Kód ── */
+    pre {
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 16px;
+      overflow-x: auto; font-size: 12px;
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+      margin: 12px 0; line-height: 1.6;
+    }
+    code {
+      background: var(--code-bg); border-radius: 3px; padding: 1px 5px;
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 12px;
+    }
+    pre code { background: none; padding: 0; }
+
+    /* ── Fájlfa ── */
+    .tree {
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 12px;
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px; line-height: 1.9;
+      white-space: pre; overflow-x: auto;
+    }
+    .tree .dir  { color: var(--primary); font-weight: 700; }
+    .tree .file { color: #3a6a85; }
+    .tree .cm   { color: #8fa8bc; font-style: italic; }
+
+    /* ── Folyamatábra ── */
+    .flow {
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 11.5px;
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px; line-height: 1.9; white-space: pre;
+    }
+
+    /* ── Nyomtatás / PDF ── */
+    @media print {
+      @page { margin: 18mm 16mm; }
+
+      body {
+        max-width: 100%; padding: 0;
+        font-size: 11px; line-height: 1.6;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      /* Borító saját oldal */
+      .cover {
+        min-height: 100vh; padding: 80px 40px;
+        page-break-after: always; break-after: page;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .cover .logo { font-size: 40px; }
+
+      /* Minden fő szekció új oldalon kezdődjön */
+      h1.section-title {
+        font-size: 20px;
+        page-break-before: always; break-before: page;
+        page-break-after: avoid;  break-after: avoid;
+        margin-top: 0;
+      }
+      /* Az első szekció NE kezdjen új oldalt (már az a TOC utáni első elem) */
+      h1.section-title:first-of-type {
+        page-break-before: auto; break-before: auto;
+      }
+
+      h2.sub-title {
+        font-size: 15px;
+        page-break-after: avoid; break-after: avoid;
+      }
+      h3.sub-sub {
+        page-break-after: avoid; break-after: avoid;
+      }
+
+      /* Ne törjön ketté belül */
+      table, pre, .tree, .flow, .info-box, .warn-box, .toc {
+        page-break-inside: avoid; break-inside: avoid;
+      }
+      tr { page-break-inside: avoid; break-inside: avoid; }
+
+      table { font-size: 10.5px; }
+      pre, .tree, .flow { font-size: 10px; }
+
+      thead tr            { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      tbody tr:nth-child(even) { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .info-box, .warn-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+      a { color: inherit; text-decoration: none; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ BORÍTÓ ═══════════ -->
+<div class="cover">
+  <div class="logo">Give&amp;Go</div>
+  <div class="tagline">Önkéntes Platform — Fejlesztői Dokumentáció</div>
+  <div class="badge-row">
+    <span class="badge">Next.js 16.2</span>
+    <span class="badge">React 19</span>
+    <span class="badge">TypeScript 5</span>
+    <span class="badge">Tailwind CSS v4</span>
+    <span class="badge">App Router</span>
+    <span class="badge">Zod</span>
+  </div>
+  <div class="meta">Verzió: Beta &nbsp;·&nbsp; Nyelv: Magyar &nbsp;·&nbsp; 2026. május</div>
+  <br/>
+  <div class="no-print" style="margin-top:20px; font-size:13px; color:var(--primary); opacity:.7;">
+    PDF mentéshez: <strong>Ctrl+P → Nyomtatás PDF-be</strong>
+  </div>
+</div>
+
+<!-- ═══════════ TARTALOMJEGYZÉK ═══════════ -->
+<div class="toc" id="toc">
+  <h2>Tartalomjegyzék</h2>
+  <ol>
+    <li><a href="#struktura">Mappaszerkezet</a></li>
+    <li><a href="#lib">Lib fájlok</a>
+      <ol class="sub">
+        <li><a href="#lib-definitions">definitions.ts – Típusdefiníciók</a></li>
+        <li><a href="#lib-constants">constants.ts – Konstansok</a></li>
+        <li><a href="#lib-utils">utils.ts – Segédfüggvények</a></li>
+        <li><a href="#lib-placeholder">placeholder-data.ts – Demo adatok</a></li>
+      </ol>
+    </li>
+    <li><a href="#routes">Útvonalak (App Router)</a></li>
+    <li><a href="#components">Server vs. Client komponensek</a></li>
+    <li><a href="#api">API integráció</a></li>
+    <li><a href="#env">Környezeti változók</a></li>
+    <li><a href="#practices">Legjobb gyakorlatok</a>
+      <ol class="sub">
+        <li><a href="#prac-ts">TypeScript konvenciók</a></li>
+        <li><a href="#prac-component">Komponens struktúra</a></li>
+        <li><a href="#prac-page">Új oldal hozzáadása</a></li>
+        <li><a href="#prac-api">Új API hívás hozzáadása</a></li>
+        <li><a href="#prac-state">Állapotkezelés</a></li>
+        <li><a href="#prac-style">Stílusozás</a></li>
+      </ol>
+    </li>
+    <li><a href="#create">Esemény létrehozó form</a>
+      <ol class="sub">
+        <li><a href="#create-overview">Áttekintés és lépések</a></li>
+        <li><a href="#create-fields">fields.tsx – Field komponensek</a></li>
+        <li><a href="#create-validation">Validáció (forms.tsx)</a></li>
+        <li><a href="#create-state">Állapotkezelés és localStorage</a></li>
+      </ol>
+    </li>
+    <li><a href="#todo">Még nem implementált funkciók</a></li>
+  </ol>
+</div>
+
+<!-- ═══════════ 1. MAPPASZERKEZET ═══════════ -->
+<h1 class="section-title" id="struktura">1. Mappaszerkezet</h1>
+
+<div class="tree">
+<span class="dir">apps/web/</span>
+├── <span class="dir">src/</span>
+│   ├── <span class="dir">app/</span>                       <span class="cm"># Next.js App Router – minden route itt él</span>
+│   │   ├── <span class="dir">(landing)/</span>
+│   │   │   └── <span class="file">page.tsx</span>           <span class="cm"># / → átirányít /coming-soon-ra</span>
+│   │   ├── <span class="dir">coming-soon/</span>
+│   │   │   ├── <span class="file">page.tsx</span>           <span class="cm"># /coming-soon – nyitóoldal + hírlevél</span>
+│   │   │   └── <span class="file">loading.tsx</span>        <span class="cm"># Suspense fallback</span>
+│   │   ├── <span class="dir">events/</span>
+│   │   │   ├── <span class="file">page.tsx</span>           <span class="cm"># /events – eseménylista</span>
+│   │   │   ├── <span class="dir">search/</span>
+│   │   │   │   └── <span class="file">page.tsx</span>       <span class="cm"># /events/search – keresés/szűrés</span>
+│   │   │   └── <span class="dir">[id]/</span>
+│   │   │       ├── <span class="file">page.tsx</span>       <span class="cm"># /events/:id – esemény részletei</span>
+│   │   │       ├── <span class="file">loading.tsx</span>
+│   │   │       └── <span class="dir">apply/</span>
+│   │   │           ├── <span class="file">page.tsx</span>   <span class="cm"># /events/:id/apply – jelentkezés</span>
+│   │   │           └── <span class="file">loading.tsx</span>
+│   │   ├── <span class="dir">auth/</span>
+│   │   │   ├── <span class="dir">login/</span>
+│   │   │   │   ├── <span class="file">page.tsx</span>       <span class="cm"># /auth/login</span>
+│   │   │   │   └── <span class="file">loading.tsx</span>
+│   │   │   └── <span class="dir">register/</span>
+│   │   │       ├── <span class="file">page.tsx</span>       <span class="cm"># /auth/register</span>
+│   │   │       └── <span class="file">loading.tsx</span>
+│   │   ├── <span class="dir">newsletter/</span>
+│   │   │   └── <span class="dir">unsubscribe/</span>
+│   │   │       ├── <span class="file">page.tsx</span>       <span class="cm"># /newsletter/unsubscribe</span>
+│   │   │       └── <span class="file">loading.tsx</span>
+│   │   ├── <span class="dir">create/</span>
+│   │   │   ├── <span class="file">page.tsx</span>           <span class="cm"># /create – 3-lépéses wizard</span>
+│   │   │   ├── <span class="dir">info/</span>
+│   │   │   │   └── <span class="file">page.tsx</span>       <span class="cm"># /create/info – tájékoztató</span>
+│   │   │   └── <span class="dir">success/</span>
+│   │   │       └── <span class="file">page.tsx</span>       <span class="cm"># /create/success – sikeres beküldés</span>
+│   │   ├── <span class="file">not-found.tsx</span>          <span class="cm"># 404 oldal (automatikusan aktiválódik)</span>
+│   │   └── <span class="file">layout.tsx</span>             <span class="cm"># Gyökér layout – HTML, font, metadata</span>
+│   ├── <span class="dir">components/</span>
+│   │   ├── <span class="dir">create/</span>                <span class="cm"># Esemény létrehozó form komponensek</span>
+│   │   │   ├── <span class="file">fields.tsx</span>         <span class="cm"># FormField, LongField, UploadField, SwitchField</span>
+│   │   │   ├── <span class="file">forms.tsx</span>          <span class="cm"># 3-lépéses wizard + validáció</span>
+│   │   │   ├── <span class="file">form-one.tsx</span>       <span class="cm"># 1. lépés: Szervezet adatai</span>
+│   │   │   ├── <span class="file">form-two.tsx</span>       <span class="cm"># 2. lépés: Esemény adatai</span>
+│   │   │   ├── <span class="file">form-three.tsx</span>     <span class="cm"># 3. lépés: Leírás + képek</span>
+│   │   │   ├── <span class="file">header.tsx</span>         <span class="cm"># Oldal fejléc (gradiens sáv + cím)</span>
+│   │   │   ├── <span class="file">info.tsx</span>           <span class="cm"># Tájékoztató szöveg (client)</span>
+│   │   │   └── <span class="file">success.tsx</span>        <span class="cm"># Sikeres beküldés (client)</span>
+│   │   ├── <span class="dir">landing/</span>               <span class="cm"># header, navbar, card, category stb.</span>
+│   │   ├── <span class="dir">search/</span>                <span class="cm"># main.tsx – szűrőűrlap</span>
+│   │   ├── <span class="dir">auth/</span>                  <span class="cm"># ui.tsx – AuthPage / AuthCard layout</span>
+│   │   ├── <span class="dir">newsletter/</span>            <span class="cm"># subscribe-form.tsx, email-template.tsx</span>
+│   │   ├── <span class="dir">ui/</span>                    <span class="cm"># apply-button, share-button, skeletons</span>
+│   │   └── <span class="file">globals.css</span>            <span class="cm"># Globális stílusok + Tailwind import</span>
+│   ├── <span class="dir">lib/</span>
+│   │   ├── <span class="file">definitions.ts</span>         <span class="cm"># TypeScript interfészek és típusok</span>
+│   │   ├── <span class="file">constants.ts</span>           <span class="cm"># Alkalmazásszintű konstansok</span>
+│   │   ├── <span class="file">utils.ts</span>               <span class="cm"># Dátumformázó, kártya-kereső</span>
+│   │   ├── <span class="file">placeholder-data.ts</span>    <span class="cm"># Demo esemény adatok</span>
+│   │   └── <span class="file">env.ts</span>                 <span class="cm"># @t3-oss/env-nextjs validáció</span>
+│   ├── <span class="dir">database/</span>
+│   │   ├── <span class="file">index.ts</span>               <span class="cm"># Drizzle ORM kapcsolat (Neon)</span>
+│   │   └── <span class="dir">schema/</span>                <span class="cm"># Adatbázis sémák</span>
+│   └── <span class="dir">features/</span>
+│       └── <span class="dir">newsletter/lib/</span>
+│           └── <span class="file">actions.tsx</span>        <span class="cm"># Server actions (subscribe, unsubscribe)</span>
+├── <span class="file">next.config.ts</span>                 <span class="cm"># Next.js konfig (React Compiler engedélyezve)</span>
+├── <span class="file">tsconfig.json</span>                  <span class="cm"># TypeScript konfig (@ alias → src/)</span>
+└── <span class="file">package.json</span>
+</div>
+
+<div class="info-box">
+  <strong>@ útvonal alias:</strong> A <code>@</code> az <code>src/</code> mappára mutat, konfigurálva <code>tsconfig.json</code>-ban.<br/>
+  Példa: <code>import { productName } from '@/lib/constants'</code><br/><br/>
+  <strong>Fájlnév konvenció:</strong> A Next.js alkalmazásban a komponens fájlok <strong>kebab-case</strong>-ben írandók (pl. <code>card-buttons.tsx</code>, <code>form-two.tsx</code>).
+</div>
+
+<!-- ═══════════ 2. LIB FÁJLOK ═══════════ -->
+<h1 class="section-title" id="lib">2. Lib fájlok <code>src/lib/</code></h1>
+
+<p>A <code>src/lib/</code> mappa tartalmazza az alkalmazás teljes logikai alapját: típusokat, konstansokat, segédfüggvényeket és demo adatokat. Ezeket importálni kell — nem közvetlen DOM-manipulációt végeznek.</p>
+
+<!-- definitions.ts -->
+<h2 class="sub-title" id="lib-definitions">2.1 definitions.ts – TypeScript típusdefiníciók</h2>
+<p>Minden TypeScript interfész és típus ide kerül. Máshol nem szabad típusokat definiálni.</p>
+
+<table>
+  <thead><tr><th>Típus / Interfész</th><th>Leírás</th></tr></thead>
+  <tbody>
+    <tr><td><code>RegistrationType</code></td><td><code>'volunteer' | 'organization'</code> — regisztrációs típusok</td></tr>
+    <tr><td><code>GroupingCategory</code></td><td><code>'upcoming' | 'permanent' | 'popular'</code> — eseménykategóriák</td></tr>
+    <tr><td><code>Profile</code></td><td>Keresési profil: <code>id</code>, <code>label</code>, <code>description</code></td></tr>
+    <tr><td><code>Tag</code></td><td>Eseménycímke: <code>id</code>, <code>label</code>, <code>color</code> (hex szín)</td></tr>
+    <tr><td><code>Organizer</code></td><td>Szervező adatai: <code>name</code>, <code>phone</code>, <code>website</code>, <code>email</code></td></tr>
+    <tr><td><code>EventCard</code></td><td>Teljes esemény adat — lásd alább</td></tr>
+  </tbody>
+</table>
+
+<h3 class="sub-sub">EventCard interfész</h3>
+<pre><code>interface EventCard {
+  id:               number
+  title:            string
+  address:          string
+  start_date:       string      // ISO dátum string
+  end_date:         string
+  image_url:        string
+  tags:             Tag[]
+  organizer:        Organizer
+  category:         GroupingCategory
+  description:      string
+  description_long: string | null
+  gallery_images:   string[]
+}</code></pre>
+
+<!-- constants.ts -->
+<h2 class="sub-title" id="lib-constants">2.2 constants.ts – Alkalmazás konstansok</h2>
+<p>Minden alkalmazásszintű adat, ami az üzleti logikához kell, de nem változik futás közben.</p>
+
+<table>
+  <thead><tr><th>Export</th><th>Típus</th><th>Tartalom / Cél</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>productName</code></td>
+      <td><code>string</code></td>
+      <td>Az alkalmazás neve (alapértelmezett: <code>"Give&amp;Go"</code>)</td>
+    </tr>
+    <tr>
+      <td><code>registrationtypes</code></td>
+      <td><code>RegistrationType[]</code></td>
+      <td>Elérhető regisztrációs típusok: <code>['volunteer', 'organization']</code></td>
+    </tr>
+    <tr>
+      <td><code>categoryLookup</code></td>
+      <td><code>Record&lt;GroupingCategory, string&gt;</code></td>
+      <td>Kategória kulcs → magyar megnevezés szótár:<br/>
+        <code>upcoming</code> → "Közelgő esemény"<br/>
+        <code>permanent</code> → "Állandó lehetőség"<br/>
+        <code>popular</code> → "Népszerű esemény"
+      </td>
+    </tr>
+    <tr>
+      <td><code>tags</code></td>
+      <td><code>Tag[]</code></td>
+      <td>Összes elérhető eseménycímke hex szín hozzárendelésekkel</td>
+    </tr>
+    <tr>
+      <td><code>profiles</code></td>
+      <td><code>Profile[]</code></td>
+      <td>4 előre definiált keresési profil:<br/>
+        „Segíteni szeretnék" · „Szakmai fejlődés"<br/>
+        „Közösségi élmény" · „Kötelező önkéntesség"
+      </td>
+    </tr>
+    <tr>
+      <td><code>metadataDescription</code></td>
+      <td><code>string</code></td>
+      <td>Az oldal SEO metaadataihoz használt leírás (<code>layout.tsx</code>)</td>
+    </tr>
+    <tr>
+      <td><code>metadataKeywords</code></td>
+      <td><code>string[]</code></td>
+      <td>SEO kulcsszavak (<code>layout.tsx</code>)</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- utils.ts -->
+<h2 class="sub-title" id="lib-utils">2.3 utils.ts – Segédfüggvények</h2>
+
+<table>
+  <thead><tr><th>Függvény</th><th>Szignatúra</th><th>Leírás</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>formatDuration</code></td>
+      <td><code>(start: Date, end: Date) => string</code></td>
+      <td>Dátumtartományt magyar formátumra hoz — az <code>Intl.DateTimeFormat</code> API-t használja <code>hu-HU</code> locale-lal</td>
+    </tr>
+    <tr>
+      <td><code>fetchCardById</code></td>
+      <td><code>(id: number) => Promise&lt;EventCard | null&gt;</code></td>
+      <td>Megkeres egy eseménykártyát ID alapján. Server componentekben <code>await</code>-tel hívandó. Ha nem található, <code>null</code>-t ad vissza.</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code>// Használat server componentben
+import { fetchCardById, formatDuration } from '@/lib/utils'
+
+const card = await fetchCardById(1)        // EventCard | null
+const label = formatDuration(
+  new Date(card.start_date),
+  new Date(card.end_date)
+)  // pl. "2026. május 20. – 2026. június 1."</code></pre>
+
+<!-- placeholder-data.ts -->
+<h2 class="sub-title" id="lib-placeholder">2.4 placeholder-data.ts – Demo esemény adatok</h2>
+<p>Hardkódolt <code>EventCard</code> objektumokat exportál — mindhárom kategóriából — valósághű magyar adatokkal (cím, szervező, leírás, dátum). Addig használandó, amíg az events API-t be nem kötik.</p>
+
+<pre><code>import { placeholderCards } from '@/lib/placeholder-data'
+
+const cards = placeholderCards  // EventCard[]</code></pre>
+
+<div class="warn-box">
+  <strong>Fontos:</strong> A <code>placeholder-data.ts</code> csak fejlesztés és demo célokat szolgál. Backend integráció után le kell cserélni valódi adatbázis lekérdezéssel (Drizzle ORM), és a fájl törölhető.
+</div>
+
+<!-- ═══════════ 3. ÚTVONALAK ═══════════ -->
+<h1 class="section-title" id="routes">3. Útvonalak (App Router)</h1>
+
+<p>A Next.js <strong>App Router</strong> fájlalapú routingot használ — minden <code>page.tsx</code> fájl automatikusan egy route-tá válik. Nincs külön router konfiguráció.</p>
+
+<table>
+  <thead><tr><th>URL</th><th>Fájl</th><th>Leírás</th></tr></thead>
+  <tbody>
+    <tr><td><code>/</code></td><td><code>app/(landing)/page.tsx</code></td><td>Átirányítás <code>/coming-soon</code>-ra (<code>redirect()</code>)</td></tr>
+    <tr><td><code>/coming-soon</code></td><td><code>app/coming-soon/page.tsx</code></td><td>Nyitóoldal hírlevél feliratkozással</td></tr>
+    <tr><td><code>/events</code></td><td><code>app/events/page.tsx</code></td><td>Fő eseménylista 3 kategóriában</td></tr>
+    <tr><td><code>/events/search</code></td><td><code>app/events/search/page.tsx</code></td><td>Haladó keresés és szűrés</td></tr>
+    <tr><td><code>/events/:id</code></td><td><code>app/events/[id]/page.tsx</code></td><td>Esemény részletes adatlapja</td></tr>
+    <tr><td><code>/events/:id/apply</code></td><td><code>app/events/[id]/apply/page.tsx</code></td><td>Jelentkezés megerősítő oldal</td></tr>
+    <tr><td><code>/auth/login</code></td><td><code>app/auth/login/page.tsx</code></td><td>Bejelentkezés + elfelejtett jelszó</td></tr>
+    <tr><td><code>/auth/register</code></td><td><code>app/auth/register/page.tsx</code></td><td>Regisztráció (önkéntes / szervezet)</td></tr>
+    <tr><td><code>/newsletter/unsubscribe</code></td><td><code>app/newsletter/unsubscribe/page.tsx</code></td><td>Hírlevél leiratkozás (email + id query param)</td></tr>
+    <tr><td><code>/create/info</code></td><td><code>app/create/info/page.tsx</code></td><td>Tájékoztató oldal az esemény létrehozásról</td></tr>
+    <tr><td><code>/create</code></td><td><code>app/create/page.tsx</code></td><td>3-lépéses esemény létrehozó wizard</td></tr>
+    <tr><td><code>/create/success</code></td><td><code>app/create/success/page.tsx</code></td><td>Sikeres beküldés visszajelzés</td></tr>
+    <tr><td><em>bármely ismeretlen URL</em></td><td><code>app/not-found.tsx</code></td><td>404 oldal — automatikusan aktiválódik</td></tr>
+  </tbody>
+</table>
+
+<div class="flow">HTTP kérés érkezik
+    │
+    ▼
+Next.js App Router  (fájlalapú)
+    │
+    ├── /                        → app/(landing)/page.tsx  → redirect('/coming-soon')
+    ├── /coming-soon             → app/coming-soon/page.tsx
+    ├── /events                  → app/events/page.tsx
+    ├── /events/search           → app/events/search/page.tsx
+    ├── /events/[id]             → app/events/[id]/page.tsx
+    ├── /events/[id]/apply       → app/events/[id]/apply/page.tsx
+    ├── /auth/login              → app/auth/login/page.tsx
+    ├── /auth/register           → app/auth/register/page.tsx
+    ├── /newsletter/unsubscribe  → app/newsletter/unsubscribe/page.tsx
+    ├── /create/info             → app/create/info/page.tsx
+    ├── /create                  → app/create/page.tsx
+    ├── /create/success          → app/create/success/page.tsx
+    └── *                        → app/not-found.tsx  (automatikus)</div>
+
+<h2 class="sub-title">Dinamikus route paraméterek</h2>
+<table>
+  <thead><tr><th>Típus</th><th>Hogyan olvasható</th><th>Példa</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>URL szegmens <code>[id]</code></td>
+      <td>Server componentben: <code>params</code> prop (Promise)</td>
+      <td><code>const { id } = await params</code></td>
+    </tr>
+    <tr>
+      <td>Query paraméter <code>?key=val</code></td>
+      <td>Server componentben: <code>searchParams</code> prop (Promise)</td>
+      <td><code>const { email } = await searchParams</code></td>
+    </tr>
+    <tr>
+      <td>URL szegmens <code>[id]</code></td>
+      <td>Client componentben: <code>useParams()</code> from <code>next/navigation</code></td>
+      <td><code>const { id } = useParams()</code></td>
+    </tr>
+    <tr>
+      <td>Query paraméter</td>
+      <td>Client componentben: <code>useSearchParams()</code> from <code>next/navigation</code></td>
+      <td><code>const q = useSearchParams().get('q')</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code>// Server component – dinamikus paraméter olvasás
+export default async function EventPage({
+  params,
+  searchParams,
+}: {
+  params: Promise&lt;{ id: string }&gt;
+  searchParams: Promise&lt;{ [key: string]: string | undefined }&gt;
+}) {
+  const { id } = await params
+  const { q } = await searchParams
+  // ...
+}</code></pre>
+
+<!-- ═══════════ 4. SERVER VS CLIENT KOMPONENSEK ═══════════ -->
+<h1 class="section-title" id="components">4. Server vs. Client komponensek</h1>
+
+<p>A Next.js App Routerben minden komponens alapértelmezés szerint <strong>Server Component</strong>. Client oldali funkcionalitás (hook-ok, event handler-ek, böngésző API-k) <strong>csak Client Component</strong>-ben lehetséges.</p>
+
+<table>
+  <thead><tr><th>Jellemző</th><th>Server Component</th><th>Client Component</th></tr></thead>
+  <tbody>
+    <tr><td>Fájl elején</td><td><em>semmi</em></td><td><code>'use client'</code></td></tr>
+    <tr><td>React hook-ok</td><td>Nem</td><td>Igen (<code>useState</code>, <code>useEffect</code>, stb.)</td></tr>
+    <tr><td>Event handler-ek</td><td>Nem</td><td>Igen (<code>onClick</code>, <code>onChange</code>, stb.)</td></tr>
+    <tr><td>Adatbázis hozzáférés</td><td>Igen (közvetlenül)</td><td>Nem (API-n keresztül)</td></tr>
+    <tr><td>Navigáció</td><td><code>redirect()</code> from <code>next/navigation</code></td><td><code>useRouter()</code> from <code>next/navigation</code></td></tr>
+    <tr><td>Link komponens</td><td><code>&lt;Link href="..."&gt;</code> from <code>next/link</code></td><td><code>&lt;Link href="..."&gt;</code> from <code>next/link</code></td></tr>
+    <tr><td>Képek</td><td><code>&lt;Image&gt;</code> from <code>next/image</code></td><td><code>&lt;Image&gt;</code> from <code>next/image</code></td></tr>
+    <tr><td>localStorage</td><td>Nem</td><td>Igen</td></tr>
+  </tbody>
+</table>
+
+<div class="info-box">
+  <strong>Ökölszabály:</strong> Ha egy komponensnek van <code>useState</code>, <code>useEffect</code>, <code>onClick</code> stb. — kell a <code>'use client'</code>. Ha csak megjelenít adatot (props-ból vagy adatbázisból), maradhat server component.
+</div>
+
+<h3 class="sub-sub">Navigáció szerver vs. kliens oldalon</h3>
+<pre><code>// Server component – programmatikus átirányítás
+import { redirect, notFound } from 'next/navigation'
+
+if (!card) notFound()        // 404 oldalt jelenít meg
+redirect('/coming-soon')     // HTTP 307 átirányítás
+
+// Client component – felhasználói interakcióra
+'use client'
+import { useRouter } from 'next/navigation'
+
+const router = useRouter()
+router.push('/create')       // programmatikus navigáció
+router.back()                // visszalépés</code></pre>
+
+<!-- ═══════════ 5. API INTEGRÁCIÓ ═══════════ -->
+<h1 class="section-title" id="api">5. API integráció</h1>
+
+<p>A Next.js alkalmazás <strong>Server Actions</strong>-t és <strong>Drizzle ORM</strong>-et használ az adatbázis műveletekhez (Neon PostgreSQL). A natív <code>fetch</code> API szükség esetén külső API hívásokhoz is elérhető.</p>
+
+<h2 class="sub-title">Implementált server actions</h2>
+
+<table>
+  <thead><tr><th>Action</th><th>Fájl</th><th>Leírás</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>subscribeToNewsletter</code></td>
+      <td><code>features/newsletter/lib/actions.tsx</code></td>
+      <td>Hírlevél feliratkozás — elmenti az emailt az adatbázisba és visszaigazoló emailt küld (Resend).</td>
+    </tr>
+    <tr>
+      <td><code>unsubscribeFromNewsletter</code></td>
+      <td><code>features/newsletter/lib/actions.tsx</code></td>
+      <td>Hírlevél leiratkozás — törli az előfizetést az adatbázisból <code>email + id</code> alapján.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 class="sub-title">Még nem integrált funkciók</h2>
+
+<table>
+  <thead><tr><th>Funkció</th><th>Jelenlegi állapot</th><th>Szükséges implementáció</th></tr></thead>
+  <tbody>
+    <tr><td>Eseménylista</td><td>Placeholder adatok</td><td>Drizzle ORM lekérdezés: <code>db.select().from(events).where(...)</code></td></tr>
+    <tr><td>Esemény részletei</td><td>Placeholder keresés</td><td>Drizzle ORM: <code>db.select().from(events).where(eq(events.id, id))</code></td></tr>
+    <tr><td>Esemény keresés</td><td>Csak UI, nincs küldés</td><td>Server Action vagy API route szűrő paraméterekkel</td></tr>
+    <tr><td>Bejelentkezés</td><td>Csak UI</td><td>Auth megoldás (pl. NextAuth.js) + adatbázis</td></tr>
+    <tr><td>Regisztráció</td><td>Csak UI, redirect success-re</td><td>Server Action + users tábla Drizzle-ben</td></tr>
+    <tr><td>Önkéntes jelentkezés</td><td>mailto: link</td><td>Server Action: <code>POST /events/:id/apply</code> + értesítés email</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════ 6. KÖRNYEZETI VÁLTOZÓK ═══════════ -->
+<h1 class="section-title" id="env">6. Környezeti változók</h1>
+
+<p>A környezeti változókat a <code>src/lib/env.ts</code> fájl kezeli a <code>@t3-oss/env-nextjs</code> csomag segítségével — ez build időben validálja a változókat és típusbiztos hozzáférést biztosít.</p>
+
+<table>
+  <thead><tr><th>Változó</th><th>Kötelező?</th><th>Hol használt</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>DATABASE_URL</code></td>
+      <td>Igen</td>
+      <td><code>database/index.ts</code> — Neon PostgreSQL kapcsolat</td>
+    </tr>
+    <tr>
+      <td><code>RESEND_API_KEY</code></td>
+      <td>Igen (emailekhez)</td>
+      <td><code>features/newsletter/lib/actions.tsx</code> — email küldés</td>
+    </tr>
+    <tr>
+      <td><code>NEWSLETTER_FROM_EMAIL</code></td>
+      <td>Igen</td>
+      <td>Feladó email cím a hírlevél értesítőkhöz</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code># .env.local (nem kerül git-be)
+DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
+RESEND_API_KEY=re_xxxxxxxxxxxxx
+NEWSLETTER_FROM_EMAIL=newsletter@givego.hu</code></pre>
+
+<div class="warn-box">
+  <strong>Fontos:</strong> A Next.js-ben a szerver oldali változók NEM kerülnek a böngészőbe — ellentétben a Vite <code>VITE_</code> prefixű változóival. Ha böngésző oldali hozzáférés szükséges, <code>NEXT_PUBLIC_</code> prefixet kell használni. Soha ne kerüljön <code>NEXT_PUBLIC_</code> prefixű változóba titok (API kulcs, jelszó).
+</div>
+
+<!-- ═══════════ 7. LEGJOBB GYAKORLATOK ═══════════ -->
+<h1 class="section-title" id="practices">7. Legjobb gyakorlatok</h1>
+
+<!-- TypeScript -->
+<h2 class="sub-title" id="prac-ts">7.1 TypeScript konvenciók</h2>
+<ul>
+  <li>Strict mód engedélyezve — tilos az <code>any</code>, tilosak a fel nem használt változók</li>
+  <li>Minden interfész és típus az <code>src/lib/definitions.ts</code>-ben legyen definiálva</li>
+  <li>Relatív import helyett mindig a <code>@</code> aliast használd: <code>import { productName } from '@/lib/constants'</code></li>
+  <li>Komponens propok típusát inline interfészként add meg, ugyanabban a fájlban</li>
+  <li>Új globális típust adjál hozzá a <code>definitions.ts</code>-hez, ne az adott komponens fájlba</li>
+</ul>
+
+<!-- Komponens struktúra -->
+<h2 class="sub-title" id="prac-component">7.2 Komponens struktúra</h2>
+<p>Minden komponens fájl ugyanezt a sorrendet kövesse:</p>
+<pre><code>// 1. 'use client' — csak ha szükséges (hook-ok, event handler-ek)
+'use client'
+
+// 2. React/hook importok
+import { useState } from 'react'
+
+// 3. Next.js importok
+import Link from 'next/link'
+import Image from 'next/image'
+
+// 4. Típus importok (@ alias)
+import type { EventCard } from '@/lib/definitions'
+
+// 5. Komponens importok (@ alias)
+import Button from '@repo/ui/button'
+
+// 6. Props interfész
+interface Props {
+  card: EventCard
+}
+
+// 7. Default export – PascalCase névvel
+export default function MyComponent({ card }: Props) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    &lt;div className="..."&gt;
+      {/* JSX */}
+    &lt;/div&gt;
+  )
+}</code></pre>
+
+<h3 class="sub-sub">Elnevezési konvenciók</h3>
+<table>
+  <thead><tr><th>Elem</th><th>Konvenció</th><th>Példa</th></tr></thead>
+  <tbody>
+    <tr><td>Komponens fájlok</td><td>kebab-case</td><td><code>event-detail.tsx</code>, <code>form-two.tsx</code></td></tr>
+    <tr><td>Page fájlok</td><td>mindig <code>page.tsx</code></td><td><code>app/events/[id]/page.tsx</code></td></tr>
+    <tr><td>Komponens export</td><td>PascalCase default export</td><td><code>export default function EventDetail()</code></td></tr>
+    <tr><td>Utility fájlok</td><td>kebab-case</td><td><code>utils.ts</code>, <code>constants.ts</code></td></tr>
+    <tr><td>State változók</td><td>camelCase, leíró név</td><td><code>isMenuOpen</code>, <code>selectedProfile</code></td></tr>
+    <tr><td>CSS osztályok</td><td>Csak Tailwind utility; egyedi osztály csak <code>globals.css</code>-ben</td><td><code>className="flex items-center gap-4"</code></td></tr>
+    <tr><td>Button komponens</td><td>Import a monorepo UI package-ből</td><td><code>import Button from '@repo/ui/button'</code></td></tr>
+  </tbody>
+</table>
+
+<!-- Új oldal -->
+<h2 class="sub-title" id="prac-page">7.3 Új oldal hozzáadása</h2>
+<ol>
+  <li>Hozd létre a mappát és fájlt: <code>src/app/uj-oldal/page.tsx</code></li>
+  <li>Exportálj egy default függvényt — a Next.js automatikusan regisztrálja a <code>/uj-oldal</code> route-ot</li>
+  <li>Ha a komponens hook-ot vagy event handler-t használ, add hozzá a <code>'use client'</code> direktívát a fájl elejére</li>
+  <li>Ha dinamikus szegmens kell: <code>src/app/[slug]/page.tsx</code></li>
+  <li>Opcionálisan adj hozzá <code>loading.tsx</code>-t Suspense fallback-nek</li>
+  <li>Ha szükséges, adj hozzá nav linket a <code>components/landing/navbar-links.tsx</code>-ben és a <code>components/landing/navbar-mobile.tsx</code>-ben</li>
+</ol>
+
+<pre><code>// src/app/uj-oldal/page.tsx
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Új oldal',
+}
+
+export default function UjOldal() {
+  return &lt;main&gt;...&lt;/main&gt;
+}</code></pre>
+
+<!-- Új API hívás -->
+<h2 class="sub-title" id="prac-api">7.4 Új API / adatbázis hívás hozzáadása</h2>
+<p>Adatbázis műveletek <strong>Server Action</strong>-ként vagy közvetlenül server componentben végzendők. Kliens oldali fetch csak külső API-khoz indokolt.</p>
+<pre><code>// Server Action (features/valami/lib/actions.ts)
+'use server'
+
+import { db } from '@/database'
+import { events } from '@/database/schema'
+import { eq } from 'drizzle-orm'
+
+export async function getEventById(id: number) {
+  const result = await db
+    .select()
+    .from(events)
+    .where(eq(events.id, id))
+    .limit(1)
+  return result[0] ?? null
+}
+
+// Server component-ben hívás
+const event = await getEventById(Number(id))
+if (!event) notFound()</code></pre>
+
+<!-- Állapotkezelés -->
+<h2 class="sub-title" id="prac-state">7.5 Állapotkezelés</h2>
+<p>A projekt <strong>nem használ globális állapotkezelő könyvtárat</strong> (nincs Redux, Zustand stb.). Minden állapot lokális, React hook-okkal — de csak Client Componentekben.</p>
+
+<table>
+  <thead><tr><th>Hook / API</th><th>Mire való</th><th>Import</th></tr></thead>
+  <tbody>
+    <tr><td><code>useState</code></td><td>Lokális UI állapot (form, toggle, loading)</td><td><code>react</code></td></tr>
+    <tr><td><code>useEffect</code></td><td>Mellékhatások (pl. localStorage szinkron)</td><td><code>react</code></td></tr>
+    <tr><td><code>useRouter</code></td><td>Programmatikus navigáció client componentben</td><td><code>next/navigation</code></td></tr>
+    <tr><td><code>useParams</code></td><td>Dinamikus route szegmens client componentben</td><td><code>next/navigation</code></td></tr>
+    <tr><td><code>useSearchParams</code></td><td>URL query paraméterek client componentben</td><td><code>next/navigation</code></td></tr>
+    <tr><td><code>redirect()</code></td><td>Programmatikus átirányítás server componentben</td><td><code>next/navigation</code></td></tr>
+    <tr><td><code>notFound()</code></td><td>404 oldal megjelenítése server componentben</td><td><code>next/navigation</code></td></tr>
+  </tbody>
+</table>
+
+<div class="info-box">
+  Ha globális állapot kell (pl. auth munkamenet, megosztott szűrők), először fontold meg a <strong>React Context</strong>-et (beépített, de csak client componentekkel működik) vagy a <strong>Zustand</strong>-ot (könnyűsúlyú), mielőtt bonyolultabb megoldást vezetnél be.
+</div>
+
+<!-- Stílusozás -->
+<h2 class="sub-title" id="prac-style">7.6 Stílusozás</h2>
+<ul>
+  <li>Kizárólag <strong>Tailwind CSS v4</strong> utility class-ok — egyedi class csak <code>src/components/globals.css</code>-ben</li>
+  <li>Mobile-first: az alap stílusok mobilra vonatkoznak, <code>md:</code> és <code>lg:</code> breakpointokkal bővítve</li>
+  <li>Nincs külön <code>tailwind.config.js</code> — a konfiguráció a <code>globals.css</code>-ben van</li>
+  <li>A <code>globals.css</code> importálva van a gyökér <code>layout.tsx</code>-ben</li>
+</ul>
+
+<h3 class="sub-sub">Egyedi CSS változók (globals.css)</h3>
+<pre><code>:root {
+  --background: #ffffff;
+  --foreground: #284b63;   /* elsődleges sötétkék */
+  --main-gradient: linear-gradient(0deg, #60fcd2, #98deec);
+}
+
+/* Főgradiens háttér — használd: className="main-gradient" */</code></pre>
+
+<h3 class="sub-sub">Színpaletta</h3>
+<table>
+  <thead><tr><th>Név</th><th>Hex</th><th>Felhasználás</th></tr></thead>
+  <tbody>
+    <tr><td>Elsődleges kék</td><td>#284B63</td><td>Fejlécek, gombok, szöveg</td></tr>
+    <tr><td>Másodlagos kék</td><td>#7E9FB6</td><td>Al-szöveg, másodlagos UI elemek</td></tr>
+    <tr><td>Gradiens kezdet (cyan)</td><td>#60FCD2</td><td>Gradiens háttér, aktív elemek</td></tr>
+    <tr><td>Gradiens vég (égkék)</td><td>#98DEEC</td><td>Gradiens háttér</td></tr>
+  </tbody>
+</table>
+
+<h3 class="sub-sub">Button komponens</h3>
+<p>A Button egy megosztott UI komponens a monorepo <code>packages/ui</code> mappájában. Importálás: <code>import Button from '@repo/ui/button'</code>. Automatikusan <code>'use client'</code>.</p>
+<pre><code>&lt;Button styleType="primary" styleVariant="filled" fill big&gt;
+  Szöveg
+&lt;/Button&gt;
+
+// styleType: 'primary' | 'secondary'
+// styleVariant: 'filled' | 'outlined'
+// fill: teljes szélesség  |  big: magasabb (46px)  |  small: alacsonyabb (30px)</code></pre>
+
+<h3 class="sub-sub">Linting és minőség</h3>
+<ul>
+  <li>Commit előtt futtasd: <code>npm run lint</code></li>
+  <li>ESLint Next.js szabályokat tartalmaz a React Hooks szabályokkal együtt</li>
+  <li>A <code>npm run build</code> TypeScript type-checket is futtat — build előtt nulla típushiba kell</li>
+  <li>A React Compiler engedélyezve van (<code>next.config.ts</code>), automatikus memoizáció</li>
+</ul>
+
+<!-- ═══════════ 8. ESEMÉNY LÉTREHOZÓ FORM ═══════════ -->
+<h1 class="section-title" id="create">8. Esemény létrehozó form <code>/create</code></h1>
+
+<p>A <code>src/components/create/</code> mappában lévő 3-lépéses wizard segítségével NGO-k hozhatnak létre önkéntes eseményeket. Az állapot teljes egészében <code>localStorage</code>-ban tárolódik — nincs szükség global state managerre. Minden create komponens <strong>Client Component</strong> (<code>'use client'</code>), mert hook-okat és böngésző API-t (localStorage) használnak.</p>
+
+<div class="flow">Felhasználó megnyitja a /create/info útvonalat
+          │
+          ▼
+    app/create/info/page.tsx  →  &lt;Header&gt; + &lt;Info&gt;
+          │  (Oké, kezdjük! gomb → router.push('/create'))
+          ▼
+    app/create/page.tsx  →  &lt;Header&gt; + &lt;Forms&gt;
+    ┌─────────────────────────────────────────────┐
+    │  forms.tsx  (wizard vezérlő – 'use client') │
+    │                                             │
+    │  page=0 → form-one   (Szervezet adatai)     │
+    │  page=1 → form-two   (Esemény adatai)       │
+    │  page=2 → form-three (Leírás + képek)       │
+    │                                             │
+    │  Tovább → validateFirst/Second/Third()      │
+    │           ha hibátlan → page++              │
+    │           ha page=2 és hibátlan →           │
+    │             router.push('/create/success')  │
+    └─────────────────────────────────────────────┘
+          │
+          ▼
+    app/create/success/page.tsx  →  &lt;Header&gt; + &lt;Success&gt;</div>
+
+<!-- Lépések -->
+<h2 class="sub-title" id="create-overview">8.1 Lépések áttekintése</h2>
+
+<table>
+  <thead><tr><th>Lépés</th><th>Komponens</th><th>Mezők</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Szervezet adatai</strong></td>
+      <td><code>form-one.tsx</code></td>
+      <td>Szervezet neve, kapcsolattartó neve, email, telefon, weboldal, jelszó, nyilvántartási szám, logó (1 kép, max 40 MB)</td>
+    </tr>
+    <tr>
+      <td><strong>2. Esemény adatai</strong></td>
+      <td><code>form-two.tsx</code></td>
+      <td>
+        <strong>Segítség Fajtája switch:</strong> Rendszeres / Egyszeri<br/>
+        <strong>Helyszín switch:</strong> Online/Irodai / Személyes<br/>
+        <em>Egyszeri módban:</em> kezdő és záró dátum + időpontok<br/>
+        <em>Rendszeres módban:</em> sorozat dátumok, napválasztó (multi-select), közös vagy naponkénti időpontok<br/>
+        Esemény neve, helyszíne
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3. Esemény leírása</strong></td>
+      <td><code>form-three.tsx</code></td>
+      <td>Szöveges leírás (max 1000 karakter), képek feltöltése (max 10 kép, 600 MB, PNG/JPG)</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Fields -->
+<h2 class="sub-title" id="create-fields">8.2 fields.tsx – Field komponensek</h2>
+
+<p>Minden form field komponens egyetlen fájlban van (<code>components/create/fields.tsx</code>), named export-okkal. Fájl elején: <code>'use client'</code>. Közös jellemzők:</p>
+<ul>
+  <li>Lazy <code>useState</code> inicializálás localStorage-ból — az UI mindig szinkronban van a mentett adatokkal</li>
+  <li><code>useEffect</code> minden változásnál menti a <code>localStorage</code>-ba</li>
+  <li><code>error?: string</code> prop — piros keret az inputon + hibaüzenet a mező alatt</li>
+</ul>
+
+<table>
+  <thead><tr><th>Export</th><th>Props (fő)</th><th>Leírás</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>FormField</code></td>
+      <td><code>label, placeholder, type, name, undertext, error?</code></td>
+      <td>Szöveges vagy számos <code>&lt;input&gt;</code>. Hibánál piros szegély.</td>
+    </tr>
+    <tr>
+      <td><code>LongField</code></td>
+      <td><code>label, placeholder, name, undertext, error?</code></td>
+      <td>Átméretezhető <code>&lt;textarea&gt;</code>, min. 40px magasság.</td>
+    </tr>
+    <tr>
+      <td><code>UploadField</code></td>
+      <td><code>label, placeholder, name, undertext, multiple?, maxFiles?, maxSizeMB?, error?</code></td>
+      <td>
+        <strong>Single mode</strong> (alapértelmezett): egyetlen fájl, dark gomb.<br/>
+        <strong>Multi mode</strong> (<code>multiple=true</code>): gomb + feltöltött fájlok 2 oszlopos rácsban névvel, mérettel és törlés gombbal.
+      </td>
+    </tr>
+    <tr>
+      <td><code>SwitchField</code></td>
+      <td><code>options, name, defaultIndex?, label?, onChange?, error?</code></td>
+      <td>Pill stílusú toggle gombcsoport. Az aktív opció <code>bg-cyan-900</code> háttérrel. <code>onChange</code> callback a szülőnek.</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code>// Példa: SwitchField onChange-szel
+&lt;SwitchField
+  options={["Rendszeres", "Egyszeri"]}
+  name="helpFrequency"
+  onChange={(_, index) => setFrequencyIndex(index)}
+  error={errors["helpFrequency"]}
+/&gt;
+
+// Példa: multi-file UploadField
+&lt;UploadField
+  label=""
+  placeholder="Képek feltöltése"
+  name="eventImages"
+  undertext="Max 10 kép, max 600 MB, PNG, JPG"
+  multiple={true}
+  maxFiles={10}
+  maxSizeMB={600}
+  error={errors["eventImages"]}
+/&gt;</code></pre>
+
+<!-- Validáció -->
+<h2 class="sub-title" id="create-validation">8.3 Validáció (forms.tsx)</h2>
+
+<p>A <code>forms.tsx</code> tartalmaz minden validációs logikát Zod sémákkal. Az eredmény <code>Record&lt;string, string&gt;</code> (field neve → hibaüzenet), amit le kell adni a form komponenseknek prop-ként.</p>
+
+<table>
+  <thead><tr><th>Függvény</th><th>Validált mezők</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>validateFirst()</code></td>
+      <td><code>orgName, userName, userEmail</code> (email formátum), <code>userPhone</code> (min 7 kar.), <code>orgWeb, password</code> (min 8 kar.), <code>orgNum, logo</code> (fájl megléte)</td>
+    </tr>
+    <tr>
+      <td><code>validateSecond()</code></td>
+      <td><code>eventName, eventAddress</code>, majd <code>helpFrequency</code> értékétől függően:<br/>
+        <em>Egyszeri:</em> <code>eventStartDate, eventStartTime, eventEndTime, eventEndDate, eventCloseTime</code><br/>
+        <em>Rendszeres:</em> <code>seriesStartDate, seriesEndDate</code> + legalább 1 nap kiválasztva + <code>startTime/endTime</code> (vagy naponkénti időpontok)
+      </td>
+    </tr>
+    <tr>
+      <td><code>validateThird()</code></td>
+      <td><code>desc</code> (min 1, max 1000 kar.), <code>eventImages</code> (legalább 1 kép)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 class="sub-sub">Hiba megjelenítés</h3>
+<ul>
+  <li><strong>1–2. lépés:</strong> <code>fieldErrors</code> Record → minden field az <code>error</code> prop-ján kapja meg a saját hibáját, közvetlenül a mező alatt jelenik meg</li>
+  <li><strong>3. lépés beküldésekor:</strong> mind a 3 lépés validálódik egyszerre — a 3. lépés hibái inline, az 1–2. lépés hibái <code>[Szervezet adatai]</code> / <code>[Esemény adatai]</code> prefix-szel összefoglalóként</li>
+  <li>Vissza gombra a hibák törlődnek</li>
+  <li>Sikeres beküldés után: <code>router.push('/create/success')</code></li>
+</ul>
+
+<div class="info-box">
+  <strong>localStorage kulcsok:</strong> <code>helpFrequency</code>, <code>helpMode</code>, <code>selectedDays</code> (JSON tömb), <code>differentTimes</code> (string "true"/"false") — ezeket a <code>forms.tsx</code> validáció közvetlenül olvassa. A <code>form-two.tsx</code> ezeket <code>useEffect</code>-tel szinkronizálja.
+</div>
+
+<!-- Állapotkezelés -->
+<h2 class="sub-title" id="create-state">8.4 Állapotkezelés és localStorage</h2>
+
+<p>Minden adat a böngésző <code>localStorage</code>-jában él. Nincs szülő-gyerek prop drilling az adatokhoz — a validáció közvetlenül a storage-ból olvas.</p>
+
+<table>
+  <thead><tr><th>localStorage kulcs</th><th>Típus</th><th>Ki írja</th></tr></thead>
+  <tbody>
+    <tr><td><code>orgName, userName, userEmail, userPhone, orgWeb, password, orgNum</code></td><td>string</td><td><code>FormField</code> (form-one)</td></tr>
+    <tr><td><code>logo</code></td><td>string (fájlnév)</td><td><code>UploadField</code> (form-one)</td></tr>
+    <tr><td><code>helpFrequency</code></td><td><code>"Rendszeres"</code> | <code>"Egyszeri"</code></td><td><code>SwitchField</code> (form-two)</td></tr>
+    <tr><td><code>helpMode</code></td><td><code>"Online/Irodai"</code> | <code>"Személyes"</code></td><td><code>SwitchField</code> (form-two)</td></tr>
+    <tr><td><code>selectedDays</code></td><td>JSON <code>number[]</code> (0=Hétfő … 6=Vasárnap)</td><td><code>form-two</code> useEffect</td></tr>
+    <tr><td><code>differentTimes</code></td><td><code>"true"</code> | <code>"false"</code></td><td><code>form-two</code> useEffect</td></tr>
+    <tr><td><code>eventStartDate, eventStartTime, eventEndTime, eventEndDate, eventCloseTime</code></td><td>string</td><td><code>FormField</code> (form-two, Egyszeri mód)</td></tr>
+    <tr><td><code>seriesStartDate, seriesEndDate, startTime, endTime</code></td><td>string</td><td><code>FormField</code> (form-two, Rendszeres mód)</td></tr>
+    <tr><td><code>startTime_N, endTime_N</code></td><td>string (N = napindex)</td><td><code>FormField</code> (form-two, naponkénti mód)</td></tr>
+    <tr><td><code>eventName, eventAddress</code></td><td>string</td><td><code>FormField</code> (form-two)</td></tr>
+    <tr><td><code>desc</code></td><td>string</td><td><code>LongField</code> (form-three)</td></tr>
+    <tr><td><code>eventImages</code></td><td>JSON <code>string[]</code> (fájlnevek)</td><td><code>UploadField</code> (form-three)</td></tr>
+  </tbody>
+</table>
+
+<div class="warn-box">
+  <strong>Fontos:</strong> A form nem törli a localStorage-t beküldés után — a fejlesztőnek kell gondoskodni a clearről, ha a backend integráció megtörténik. Backend bekötésekor adjunk hozzá egy <code>localStorage.clear()</code> (vagy szelektív kulcs törlés) hívást a sikeres submit után, a <code>router.push('/create/success')</code> előtt.
+</div>
+
+<!-- ═══════════ 9. TODO ═══════════ -->
+<h1 class="section-title" id="todo">9. Még nem implementált funkciók</h1>
+
+<table>
+  <thead><tr><th>Funkció</th><th>Jelenlegi állapot</th><th>Mi szükséges</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Eseménylista adatbázisból</td>
+      <td>Hardkódolt placeholder adatok</td>
+      <td>Drizzle ORM lekérdezés cseréje a <code>fetchCardById</code> és category funkciókban</td>
+    </tr>
+    <tr>
+      <td>Esemény keresési eredmények</td>
+      <td>Form megvan, nincs küldés</td>
+      <td><code>SearchMain</code> form submit bekötése szerver action-höz vagy route handler-hez</td>
+    </tr>
+    <tr>
+      <td>Felhasználói autentikáció</td>
+      <td>Csak UI, nincs backend</td>
+      <td>Login/Register Server Actions + munkamenet kezelés (pl. NextAuth.js / Lucia)</td>
+    </tr>
+    <tr>
+      <td>Önkéntes jelentkezési form</td>
+      <td>Csak mailto: link</td>
+      <td>Valódi form submit Server Action-nel + értesítés email (Resend)</td>
+    </tr>
+    <tr>
+      <td>Esemény létrehozó backend</td>
+      <td>Form kész, nincs API hívás</td>
+      <td>Server Action a <code>forms.tsx</code>-ben: form adatok mentése DB-be + lokális tárolt adatok törlése</td>
+    </tr>
+    <tr>
+      <td>Felhasználói profilok</td>
+      <td>Nem kezdett el</td>
+      <td>Autentikált felhasználói dashboard és beállítások</td>
+    </tr>
+    <tr>
+      <td>Szervezői dashboard</td>
+      <td>Nem kezdett el</td>
+      <td>Esemény kezelés NGO-knak (szerkesztés, törlés, statisztikák)</td>
+    </tr>
+    <tr>
+      <td>Lapozás / végtelen görgetés</td>
+      <td>Nem kezdett el</td>
+      <td>Eseménylista lapozása valódi adatbázis adatoknál</td>
+    </tr>
+  </tbody>
+</table>
+
+<br/><br/>
+<hr style="border:none; border-top:2px solid var(--border); margin: 36px 0 18px;" />
+<p style="text-align:center; color:var(--muted); font-size:12px;">
+  Give&amp;Go Fejlesztői Dokumentáció &nbsp;·&nbsp; Next.js 16.2 / React 19 / TypeScript 5 / Tailwind CSS v4 &nbsp;·&nbsp; 2026. május
+</p>
+
+</body>
+</html>
