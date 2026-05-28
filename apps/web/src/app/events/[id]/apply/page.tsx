@@ -17,7 +17,11 @@ export default async function ApplyPage({ params }: { params: Promise<{ id: stri
     return notFound();
   }
 
-  const email = `mailto:${card.organizer.email}?subject=Jelentkezés%20önkéntes%20programra:%20${card.title}`;
+  const subject = encodeURIComponent(`Jelentkezés a "${card.title}" eseményre`);
+  const body = encodeURIComponent(
+    `Kedves "${card.organizer.name}" Szervezet!\n\nEzúton szeretnék jelentkezni a "${card.title}" eseményre önkéntesként. Jelentkezésemmel kapcsolatban várom mielőbbi visszajelzésüket.\n\nKöszönöm!`,
+  );
+  const email = `mailto:${card.organizer.email}?subject=${subject}&body=${body}`;
 
   return (
     <div className='flex min-h-screen flex-col items-center overflow-hidden'>

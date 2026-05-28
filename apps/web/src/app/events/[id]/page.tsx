@@ -1,5 +1,5 @@
 import { Apply } from '@/components/landing/card-buttons';
-import { fetchCardById, formatDuration } from '@/lib/utils';
+import { fetchCardById, fetchWebsiteById, formatDuration } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -14,6 +14,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   if (!card) {
     return notFound();
   }
+  const website = await fetchWebsiteById(Number(id));
 
   return (
     <div className='min-h-screen w-full overflow-hidden'>
@@ -112,7 +113,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
           <h3 className='text-2xl font-bold tracking-wide'>Szervezeti információk</h3>
           <p className='grow'>{card.organizer.description}</p>
           <Link
-            href={'#'}
+            href={website ? `${website}` : '#'}
             className='mx-auto block cursor-default text-center text-lg text-blue-500 hover:underline'
           >
             További információk a szervezetről

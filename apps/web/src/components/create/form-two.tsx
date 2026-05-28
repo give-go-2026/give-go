@@ -1,33 +1,60 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { FormField, SwitchField, ListField, TagField } from './fields';
+import { useEffect, useRef, useState } from 'react';
+import {
+  FormField,
+  SwitchField,
+  ListField,
+  TagField,
+  DatePickerField,
+  TimePickerField,
+} from './fields';
 
 const DAYS = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
 
 export default function FormTwo({ errors }: { errors: Record<string, string> }) {
-  const [frequencyIndex, setFrequencyIndex] = useState(() => {
-    if (typeof window === 'undefined') return 0;
-    return sessionStorage.getItem('helpFrequency') === 'Egyszeri' ? 1 : 0;
-  });
-  const [selectedDays, setSelectedDays] = useState<number[]>(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      return JSON.parse(sessionStorage.getItem('selectedDays') ?? '[]');
-    } catch {
-      return [];
-    }
-  });
-  const [differentTimes, setDifferentTimes] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem('differentTimes') === 'true';
-  });
+  const [frequencyIndex, setFrequencyIndex] = useState(0);
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
+  const [differentTimes, setDifferentTimes] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [seriesStartDate, setSeriesStartDate] = useState('');
+  const [globalStartTime, setGlobalStartTime] = useState('');
+  const [dayStartTimes, setDayStartTimes] = useState<Record<number, string>>({});
+
+  const selectedDaysFirstRun = useRef(true);
+  const differentTimesFirstRun = useRef(true);
 
   useEffect(() => {
+    setFrequencyIndex(sessionStorage.getItem('helpFrequency') === 'Egyszeri' ? 1 : 0);
+    try {
+      const days: number[] = JSON.parse(sessionStorage.getItem('selectedDays') ?? '[]');
+      if (days.length > 0) setSelectedDays(days);
+    } catch {
+      // ignore malformed JSON
+    }
+    setDifferentTimes(sessionStorage.getItem('differentTimes') === 'true');
+    setStartDate(sessionStorage.getItem('eventStartDate') ?? '');
+    setStartTime(sessionStorage.getItem('eventStartTime') ?? '');
+    setEndDate(sessionStorage.getItem('eventEndDate') ?? '');
+    setSeriesStartDate(sessionStorage.getItem('seriesStartDate') ?? '');
+    setGlobalStartTime(sessionStorage.getItem('startTime') ?? '');
+  }, []);
+
+  useEffect(() => {
+    if (selectedDaysFirstRun.current) {
+      selectedDaysFirstRun.current = false;
+      return;
+    }
     sessionStorage.setItem('selectedDays', JSON.stringify(selectedDays));
   }, [selectedDays]);
 
   useEffect(() => {
+    if (differentTimesFirstRun.current) {
+      differentTimesFirstRun.current = false;
+      return;
+    }
     sessionStorage.setItem('differentTimes', String(differentTimes));
   }, [differentTimes]);
 
@@ -62,7 +89,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
           placeholder='pl.: Állatvédelem'
           type='string'
           name='eventTheme'
-          undertext={'Válaszd kiknek, milyen témában nyújt támogatás az esemény'}
+          undertext={'Válaszd kiknek, milyen témában nyújt támogatást az esemény'}
           error={errors['eventTheme']}
         />
         <ListField
@@ -121,71 +148,65 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
         <div className='flex flex-col gap-4'>
           <div className='grid grid-cols-4 gap-4'>
             <div className='col-span-2'>
-              <FormField
+              <DatePickerField
                 label='Esemény kezdő dátuma'
-                placeholder='pl.: 2025.16.12.'
-                type='date'
                 name='eventStartDate'
                 undertext={null}
                 error={errors['eventStartDate']}
+                onValueChange={setStartDate}
               />
             </div>
-            <FormField
+            <TimePickerField
               label='Kezdés időpontja'
-              placeholder='pl.: 10:00'
-              type='time'
               name='eventStartTime'
               undertext={null}
               error={errors['eventStartTime']}
+              onValueChange={setStartTime}
             />
-            <FormField
+            <TimePickerField
               label='Záró időpontja'
-              placeholder='pl.: 10:00'
-              type='time'
               name='eventEndTime'
               undertext={null}
               error={errors['eventEndTime']}
+              minTime={startTime || undefined}
             />
           </div>
           <div className='grid grid-cols-4 gap-4'>
             <div className='col-span-2'>
-              <FormField
+              <DatePickerField
                 label='Esemény záró dátuma'
-                placeholder='pl.: 2025.16.12.'
-                type='date'
                 name='eventEndDate'
                 undertext={null}
                 error={errors['eventEndDate']}
+                minDate={startDate || undefined}
+                onValueChange={setEndDate}
               />
             </div>
-            <FormField
+            <TimePickerField
               label='Zárás időpontja'
-              placeholder='pl.: 17:00'
-              type='time'
               name='eventCloseTime'
               undertext={null}
               error={errors['eventCloseTime']}
+              minTime={endDate === startDate && startDate ? startTime || undefined : undefined}
             />
           </div>
         </div>
       ) : (
         <div className='flex flex-col gap-4'>
           <div className='grid grid-cols-2 gap-4'>
-            <FormField
+            <DatePickerField
               label='Esemény sorozat kezdete'
-              placeholder='pl.: 2025.16.12.'
-              type='date'
               name='seriesStartDate'
               undertext={null}
               error={errors['seriesStartDate']}
+              onValueChange={setSeriesStartDate}
             />
-            <FormField
+            <DatePickerField
               label='Esemény sorozat záródátuma'
-              placeholder='pl.: 2025.16.12.'
-              type='date'
               name='seriesEndDate'
               undertext={null}
               error={errors['seriesEndDate']}
+              minDate={seriesStartDate || undefined}
             />
           </div>
           <div className='flex flex-col gap-2'>
@@ -222,19 +243,19 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
                     <span className='mb-0.5 rounded-full bg-cyan-900 px-4 py-2 text-sm font-medium whitespace-nowrap text-white'>
                       {DAYS[dayIndex]}
                     </span>
-                    <FormField
+                    <TimePickerField
                       label='Kezdés időpontja'
-                      placeholder='pl.: 10:00'
-                      type='time'
                       name={`startTime_${dayIndex}`}
                       undertext={null}
+                      onValueChange={(val) =>
+                        setDayStartTimes((prev) => ({ ...prev, [dayIndex]: val }))
+                      }
                     />
-                    <FormField
+                    <TimePickerField
                       label='Zárás időpontja'
-                      placeholder='pl.: 17:00'
-                      type='time'
                       name={`endTime_${dayIndex}`}
                       undertext={null}
+                      minTime={dayStartTimes[dayIndex] || undefined}
                     />
                   </div>
                 ))}
@@ -244,21 +265,19 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
             </div>
           ) : (
             <div className='grid grid-cols-2 gap-4'>
-              <FormField
+              <TimePickerField
                 label='Kezdés időpontja'
-                placeholder='pl.: 10:00'
-                type='time'
                 name='startTime'
                 undertext={null}
                 error={errors['startTime']}
+                onValueChange={setGlobalStartTime}
               />
-              <FormField
+              <TimePickerField
                 label='Zárás időpontja'
-                placeholder='pl.: 17:00'
-                type='time'
                 name='endTime'
                 undertext={null}
                 error={errors['endTime']}
+                minTime={globalStartTime || undefined}
               />
             </div>
           )}
