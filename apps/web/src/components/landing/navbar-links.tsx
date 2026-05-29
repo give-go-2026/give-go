@@ -22,7 +22,7 @@ export default function NavLinks() {
 
   return (
     <Fragment>
-      <Link href='#'>Elérhetőségek</Link>
+      <Link href='/contact'>Elérhetőségek</Link>
       {session ? (
         <>
           <Link href='/dashboard'>Irányítópult</Link>
