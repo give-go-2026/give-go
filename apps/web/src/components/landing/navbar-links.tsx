@@ -11,7 +11,7 @@ export default function NavLinks() {
 
   const handleSignOut = async () => {
     try {
-      await authClient.api.signOut();
+      await authClient.signOut();
       router.push('/');
     } catch (e) {
       // keep console for debugging; do not disrupt UX

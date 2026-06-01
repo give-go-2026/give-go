@@ -42,7 +42,7 @@ function ForgotPasswordCard() {
       </Button>
       <span className='text-center text-gray-600'>
         <Link
-          href='/auth/login'
+          href='/create'
           className='hover:text-foreground font-medium underline'
         >
           Vissza

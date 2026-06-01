@@ -3,27 +3,35 @@
 import { loginAction } from '@/features/auth/lib/actions';
 import Button from '@repo/ui/button';
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, type ReactNode } from 'react';
+import { FieldError, inputClass } from './form-fields';
 
-export function LoginForm() {
+export function LoginForm({ intro }: { intro?: ReactNode }) {
   const [state, action, isPending] = useActionState(loginAction, null);
+  const fe = state?.fieldErrors ?? {};
 
   return (
     <form
       action={action}
-      className='flex flex-col gap-8'
+      className='flex flex-col gap-6'
     >
-      <h1 className='text-3xl font-bold text-gray-800'>Bejelentkezés</h1>
-      <span>Ahhoz hogy többet láss, jelentkezz be, vagy regisztrálj!</span>
+      {intro ?? (
+        <>
+          <h1 className='text-3xl font-bold text-gray-800'>Bejelentkezés</h1>
+          <span>Ahhoz hogy többet láss, jelentkezz be, vagy regisztrálj!</span>
+        </>
+      )}
       <label>
         <span className='mb-1 block text-sm font-medium text-gray-700'>E-mail cím</span>
         <input
           type='email'
           name='email'
-          className='focus:border-foreground w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none'
+          defaultValue={state?.values?.email ?? ''}
+          className={inputClass(fe.email)}
           placeholder='pelda@gmail.com'
           autoComplete='email'
         />
+        <FieldError message={fe.email} />
       </label>
       <label>
         <span className='mb-1 block text-sm font-medium text-gray-700'>Jelszó</span>
@@ -31,14 +39,15 @@ export function LoginForm() {
           type='password'
           name='password'
           placeholder='••••••••'
-          className='focus:border-foreground w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none'
+          className={inputClass(fe.password)}
           autoComplete='current-password'
         />
+        <FieldError message={fe.password} />
       </label>
       {state?.error && <p className='text-sm text-red-500'>{state.error}</p>}
       <Link
         href='/auth/login?forgotPassword=true'
-        className='cursor-pointer underline'
+        className='cursor-pointer text-sm underline'
       >
         Elfelejtettem a jelszavam
       </Link>
