@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Field, TextareaField, SelectField, SwitchInput, TagInput } from './fields';
 import { DAYS, ALL_TAGS } from './types';
 import type { EventData } from './types';
+import { fileToDataUrl } from '@/lib/images';
 
 const ARROW_ICON = (
   <svg
@@ -245,15 +246,20 @@ export function EditModal({
               <div className='flex flex-col gap-1'>
                 <label className='pb-1 text-sm'>Képek</label>
                 {form.eventImages.length === 0 ? (
-                  <p className='text-sm text-gray-400'>Nincs feltöltött kép</p>
+                  <p className='text-sm text-red-500'>Legalább egy kép feltöltése kötelező.</p>
                 ) : (
                   <div className='flex flex-wrap gap-2'>
                     {form.eventImages.map((img, i) => (
                       <div
                         key={i}
-                        className='flex items-center gap-2 rounded-md border border-gray-200 px-3 py-1 text-sm text-gray-600'
+                        className='group relative h-20 w-20 overflow-hidden rounded-md border border-gray-200'
                       >
-                        <span>{img}</span>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={img}
+                          alt={`Kép ${i + 1}`}
+                          className='h-full w-full object-cover'
+                        />
                         <button
                           type='button'
                           onClick={() =>
@@ -262,7 +268,8 @@ export function EditModal({
                               form.eventImages.filter((_, idx) => idx !== i),
                             )
                           }
-                          className='text-gray-400 hover:text-red-500'
+                          aria-label='Kép törlése'
+                          className='absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100'
                         >
                           ✕
                         </button>
@@ -278,14 +285,22 @@ export function EditModal({
                     className='hidden'
                     multiple
                     accept='.png,.jpg,.jpeg'
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files ?? []).map((f) => f.name);
-                      update('eventImages', [...form.eventImages, ...files].slice(0, 10));
+                    onChange={async (e) => {
+                      const selected = Array.from(e.target.files ?? []);
                       e.target.value = '';
+                      if (selected.length === 0) return;
+                      try {
+                        const urls = await Promise.all(selected.map(fileToDataUrl));
+                        update('eventImages', [...form.eventImages, ...urls].slice(0, 10));
+                      } catch {
+                        alert('A kép feldolgozása nem sikerült. Próbáld újra!');
+                      }
                     }}
                   />
                 </label>
-                <span className='text-xs text-gray-400'>Max 10 kép, max 600 MB, PNG, JPG</span>
+                <span className='text-xs text-gray-400'>
+                  Az első kép lesz a borítókép. Max 10 kép, PNG vagy JPG.
+                </span>
               </div>
             </div>
           )}
@@ -300,7 +315,8 @@ export function EditModal({
           </button>
           <button
             onClick={() => onSave(form)}
-            className='rounded-full bg-cyan-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-cyan-800'
+            disabled={form.eventImages.length === 0}
+            className='rounded-full bg-cyan-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-cyan-800 disabled:cursor-not-allowed disabled:opacity-50'
           >
             Mentés
           </button>

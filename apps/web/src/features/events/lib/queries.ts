@@ -5,7 +5,7 @@ import { eq, desc, inArray } from 'drizzle-orm';
 import { type EventCard, type Tag } from '@/lib/definitions';
 
 type DbEvent = typeof events.$inferSelect;
-type DbUser = Pick<typeof user.$inferSelect, 'id' | 'name' | 'email'>;
+type DbUser = Pick<typeof user.$inferSelect, 'id' | 'name' | 'email' | 'description'>;
 type DbTag = typeof tags.$inferSelect;
 
 function galleryFromJson(raw: string): string[] {
@@ -39,7 +39,7 @@ function toEventCard(event: DbEvent, org: DbUser, eventTagList: DbTag[]): EventC
       id: 1,
       name: org.name,
       email: org.email,
-      description: '',
+      description: org.description ?? '',
     },
     gallery_images: galleryFromJson(event.galleryImages),
   };

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { productName } from '@/lib/constants';
 import NavLinks from './navbar-links';
-//import NavMobileMenu from './navbar-mobile';
+import NavMobileMenu from './navbar-mobile';
 import CreateEventButton from './create-event-button';
 
 export default function Navbar() {
@@ -14,15 +14,22 @@ export default function Navbar() {
         >
           {productName}
         </Link>
-        <div className='mx-6 flex items-center gap-4 font-normal'>
+        <div className='mx-6 hidden items-center gap-4 font-normal md:flex'>
           <NavLinks />
         </div>
       </div>
 
-      <div className='items-center gap-4 md:flex'>
+      <div className='hidden items-center gap-4 md:flex'>
         <CreateEventButton />
       </div>
-      {/* <NavMobileMenu links={<NavLinks />} /> */}
+      <NavMobileMenu
+        links={
+          <>
+            <NavLinks />
+            <CreateEventButton />
+          </>
+        }
+      />
     </nav>
   );
 }

@@ -15,10 +15,11 @@ export default function FormThree({ errors }: { errors: Record<string, string> }
           label=''
           placeholder='Képek feltöltése'
           name='eventImages'
-          undertext='Max 10 kép, max 600 MB, PNG, JPG'
+          undertext='Legalább 1 kép kötelező. Max 10 kép, PNG vagy JPG.'
           multiple={true}
           maxFiles={10}
-          maxSizeMB={600}
+          maxSizeMB={15}
+          asDataUrl={true}
           error={errors['eventImages']}
         />
       </div>

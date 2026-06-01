@@ -1,5 +1,6 @@
 import { Apply } from '@/components/landing/card-buttons';
-import { fetchCardById, formatDuration } from '@/lib/utils';
+import Header from '@/components/create/header';
+import { fetchCardById, fetchWebsiteById, formatDuration } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -14,12 +15,13 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   if (!card) {
     return notFound();
   }
+  const website = await fetchWebsiteById(Number(id));
 
   return (
-    <div className='min-h-screen w-full overflow-hidden'>
+    <div className='min-h-screen overflow-hidden'>
+      <Header text='Részletes információk' />
       <header className='h-auto w-full'>
-        <section className='main-gradient h-28 w-full'></section>
-        <section className='mx-auto -mt-25 w-full max-w-416 px-3 py-6 md:px-30 md:py-8'>
+        <section className='mx-auto -mt-37 w-full max-w-416 px-3 py-6 md:px-30 md:py-8'>
           <div className='bg-background w-full rounded-3xl shadow-2xl'>
             <div className='flex flex-1 flex-col justify-center gap-3 p-6'>
               <div>
@@ -110,9 +112,11 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         </section>
         <section className='bg-background mb-50 flex w-full flex-col justify-between gap-4 rounded-3xl p-6 shadow-2xl'>
           <h3 className='text-2xl font-bold tracking-wide'>Szervezeti információk</h3>
-          <p className='grow'>{card.organizer.description}</p>
+          {card.organizer.description && (
+            <p className='grow whitespace-pre-line'>{card.organizer.description}</p>
+          )}
           <Link
-            href={'#'}
+            href={website ? `${website}` : '#'}
             className='mx-auto block cursor-default text-center text-lg text-blue-500 hover:underline'
           >
             További információk a szervezetről

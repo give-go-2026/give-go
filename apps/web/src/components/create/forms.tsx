@@ -17,7 +17,7 @@ type FieldErrors = Record<string, string>;
 const firstSchema = z.object({
   orgName: z.string().min(1, 'Szervezet neve kötelező!'),
   userName: z.string().min(1, 'Kapcsolattartó neve kötelező!'),
-  userEmail: z.string().email('Helytelen email cím!'),
+  userEmail: z.email('Helytelen email cím!'),
   userPhone: z.string().min(7, 'Helytelen telefonszám!'),
   orgWeb: z.string().min(4, 'Weboldal cím kötelező!'),
   password: z.string().min(8, 'Minimum 8 karakter legyen a jelszó!'),
@@ -75,7 +75,17 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
     const base = z
       .object({
         eventName: z.string().min(1, 'Esemény neve kötelező!'),
-        eventAddress: z.string().min(1, 'Esemény helyszíne kötelező!'),
+        eventAddress: z
+          .string()
+          .min(1, 'Esemény helyszíne kötelező!')
+          .refine(
+            (v) =>
+              v
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean).length >= 4,
+            'Add meg mind a 4 részt vesszővel elválasztva: Irányítószám, Település, Utca, Házszám!',
+          ),
         eventTheme: z.string().min(1, 'Támogatott téma kötelező!'),
         eventType: z.string().min(1, 'Munka típusa kötelező!'),
       })
@@ -153,6 +163,9 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
     const result = thirdSchema.safeParse({ desc: get('desc') });
     if (!result.success) Object.assign(errs, zodToRecord(result.error));
 
+    const eventImages: string[] = JSON.parse(get('eventImages') || '[]');
+    if (eventImages.length === 0) errs['eventImages'] = 'Legalább egy kép feltöltése kötelező!';
+
     return errs;
   }
 
@@ -198,6 +211,7 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           helpFrequency: frequency,
           helpMode: (get('helpMode') || 'Személyes') as 'Online' | 'Személyes' | 'Hibrid',
           desc: get('desc'),
+          eventImages: JSON.parse(get('eventImages') || '[]'),
           eventStartDate: get('eventStartDate') || undefined,
           eventStartTime: get('eventStartTime') || undefined,
           eventEndDate: get('eventEndDate') || undefined,

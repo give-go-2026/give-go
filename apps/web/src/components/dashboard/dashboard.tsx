@@ -1,20 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { OrgSection } from './org-section';
 import { EventCard } from './event-card';
 import { EditModal } from './edit-modal';
 import { DeleteModal } from './delete-modal';
-import { EMPTY_ORG } from './types';
 import type { OrgData, EventData } from './types';
+import { deleteEventAction, updateEventAction, updateOrgAction } from '@/features/dashboard/lib/actions';
 
-export default function Dashboard() {
-  const [org, setOrg] = useState<OrgData>(EMPTY_ORG);
-  const [events, setEvents] = useState<EventData[]>([]);
+export default function Dashboard({
+  initialOrg,
+  initialEvents,
+}: {
+  initialOrg: OrgData;
+  initialEvents: EventData[];
+}) {
+  const [org, setOrg] = useState<OrgData>(initialOrg);
+  const [events, setEvents] = useState<EventData[]>(initialEvents);
   const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<EventData | null>(null);
   const [search, setSearch] = useState('');
+  const [, startTransition] = useTransition();
 
   function eventDate(e: EventData): number {
     const raw = e.helpFrequency === 'Egyszeri' ? e.eventStartDate : e.seriesStartDate;
@@ -31,15 +38,44 @@ export default function Dashboard() {
     )
     .sort((a, b) => eventDate(b) - eventDate(a));
 
+  function handleSaveOrg(updated: OrgData) {
+    const previous = org;
+    setOrg(updated);
+    startTransition(async () => {
+      const result = await updateOrgAction(updated);
+      if (result?.error) {
+        setOrg(previous);
+        alert(result.error);
+      }
+    });
+  }
+
   function handleSaveEvent(updated: EventData) {
+    const previous = events;
     setEvents((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
     setEditingEvent(null);
+    startTransition(async () => {
+      const result = await updateEventAction(updated);
+      if (result?.error) {
+        setEvents(previous);
+        alert(result.error);
+      }
+    });
   }
 
   function handleDelete() {
     if (!deletingEvent) return;
-    setEvents((prev) => prev.filter((e) => e.id !== deletingEvent.id));
+    const target = deletingEvent;
+    const previous = events;
+    setEvents((prev) => prev.filter((e) => e.id !== target.id));
     setDeletingEvent(null);
+    startTransition(async () => {
+      const result = await deleteEventAction(target.id);
+      if (result?.error) {
+        setEvents(previous);
+        alert(result.error);
+      }
+    });
   }
 
   return (
@@ -48,7 +84,7 @@ export default function Dashboard() {
         <div className='bg-background -mt-34 flex w-full flex-col gap-8 rounded-3xl px-6 py-8 shadow-xl shadow-black/15'>
           <OrgSection
             org={org}
-            onSave={setOrg}
+            onSave={handleSaveOrg}
           />
 
           <div className='h-px w-full bg-gray-200' />
