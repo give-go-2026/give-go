@@ -3,8 +3,18 @@
 import { useEffect, useRef, useState } from 'react';
 
 const MONTH_NAMES = [
-  'Január', 'Február', 'Március', 'Április', 'Május', 'Június',
-  'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December',
+  'Január',
+  'Február',
+  'Március',
+  'Április',
+  'Május',
+  'Június',
+  'Július',
+  'Augusztus',
+  'Szeptember',
+  'Október',
+  'November',
+  'December',
 ];
 const DAY_NAMES = ['H', 'K', 'Sz', 'Cs', 'P', 'Sz', 'V'];
 const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
@@ -12,19 +22,63 @@ const MINUTES = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '
 
 function CalendarIcon() {
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' className='h-4 w-4 shrink-0 text-gray-400' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
-      <rect x='3' y='4' width='18' height='18' rx='2' ry='2' />
-      <line x1='16' y1='2' x2='16' y2='6' />
-      <line x1='8' y1='2' x2='8' y2='6' />
-      <line x1='3' y1='10' x2='21' y2='10' />
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      className='h-4 w-4 shrink-0 text-gray-400'
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth='2'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+    >
+      <rect
+        x='3'
+        y='4'
+        width='18'
+        height='18'
+        rx='2'
+        ry='2'
+      />
+      <line
+        x1='16'
+        y1='2'
+        x2='16'
+        y2='6'
+      />
+      <line
+        x1='8'
+        y1='2'
+        x2='8'
+        y2='6'
+      />
+      <line
+        x1='3'
+        y1='10'
+        x2='21'
+        y2='10'
+      />
     </svg>
   );
 }
 
 function ClockIcon() {
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' className='h-4 w-4 shrink-0 text-gray-400' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
-      <circle cx='12' cy='12' r='10' />
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      className='h-4 w-4 shrink-0 text-gray-400'
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth='2'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+    >
+      <circle
+        cx='12'
+        cy='12'
+        r='10'
+      />
       <polyline points='12 6 12 12 16 14' />
     </svg>
   );
@@ -72,6 +126,77 @@ export function FormField({
         onChange={(event) => setItem(event.target.value)}
       />
       {undertext && <span className='pt-1 text-sm text-gray-400'>{undertext}</span>}
+      {error && <span className='pt-0.5 text-sm text-red-500'>{error}</span>}
+    </div>
+  );
+}
+
+const ADDRESS_PARTS = ['Irányítószám', 'Település', 'Utca', 'Házszám'];
+
+export function AddressField({
+  label,
+  name,
+  error,
+}: {
+  label: string;
+  name: string;
+  error?: string;
+}) {
+  const [value, setValue] = useState('');
+  const [activeIndex, setActiveIndex] = useState(0);
+  const isFirstRun = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      const saved = sessionStorage.getItem(name) ?? '';
+      if (saved) setValue(saved);
+      return;
+    }
+    sessionStorage.setItem(name, value);
+  }, [value, name]);
+
+  function syncActive(input: HTMLInputElement) {
+    const caret = input.selectionStart ?? input.value.length;
+    const commasBefore = (input.value.slice(0, caret).match(/,/g) ?? []).length;
+    setActiveIndex(Math.min(commasBefore, ADDRESS_PARTS.length - 1));
+  }
+
+  return (
+    <div className='flex flex-col'>
+      <div className='flex items-center gap-5'>
+        <label className='pb-1'>{label}</label>
+        <div className='mb-1.5 flex flex-wrap gap-1.5'>
+          {ADDRESS_PARTS.map((part, i) => (
+            <span
+              key={part}
+              className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                i === activeIndex ? 'bg-cyan-900 text-white' : 'bg-gray-100 text-gray-500'
+              }`}
+            >
+              {part}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <input
+        className={`rounded-md border px-3 py-2 ${error ? 'border-red-400' : 'border-gray-300'}`}
+        name={name}
+        type='text'
+        placeholder='pl.: 310123, Arad, Pócsika utca, 12'
+        value={value}
+        onChange={(event) => {
+          setValue(event.target.value);
+          syncActive(event.target);
+        }}
+        onSelect={(event) => syncActive(event.currentTarget)}
+        onClick={(event) => syncActive(event.currentTarget)}
+        onKeyUp={(event) => syncActive(event.currentTarget)}
+      />
+      <span className='pt-1 text-sm text-gray-400'>
+        Add meg vesszővel elválasztva: {ADDRESS_PARTS.join(', ')}.
+      </span>
       {error && <span className='pt-0.5 text-sm text-red-500'>{error}</span>}
     </div>
   );
@@ -511,7 +636,7 @@ export function DatePickerField({
       setValue('');
       onValueChange?.('');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [minDate]);
 
   useEffect(() => {
@@ -708,7 +833,7 @@ export function TimePickerField({
       setValue('');
       onValueChange?.('');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [minTime]);
 
   useEffect(() => {
@@ -725,10 +850,14 @@ export function TimePickerField({
     if (!isOpen) return;
     const timer = setTimeout(() => {
       if (selectedHour && hourListRef.current) {
-        hourListRef.current.querySelector(`[data-value="${selectedHour}"]`)?.scrollIntoView({ block: 'center' });
+        hourListRef.current
+          .querySelector(`[data-value="${selectedHour}"]`)
+          ?.scrollIntoView({ block: 'center' });
       }
       if (selectedMinute && minuteListRef.current) {
-        minuteListRef.current.querySelector(`[data-value="${selectedMinute}"]`)?.scrollIntoView({ block: 'center' });
+        minuteListRef.current
+          .querySelector(`[data-value="${selectedMinute}"]`)
+          ?.scrollIntoView({ block: 'center' });
       }
     }, 0);
     return () => clearTimeout(timer);

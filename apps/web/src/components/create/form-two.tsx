@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   FormField,
+  AddressField,
   SwitchField,
   ListField,
   TagField,
@@ -75,12 +76,9 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
           undertext={null}
           error={errors['eventName']}
         />
-        <FormField
+        <AddressField
           label='Esemény címe'
-          placeholder='pl.: Arad, Pócsika utca 12.'
-          type='string'
           name='eventAddress'
-          undertext={null}
           error={errors['eventAddress']}
         />
 
