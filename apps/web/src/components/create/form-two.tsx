@@ -94,7 +94,27 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
         />
         <ListField
           label='Munka típusa'
-          values={['fizikai', 'szociális', 'irodai']}
+          values={[
+            'Adminisztráció, Asszisztens, Irodai munka',
+            'Projekt Menedzsment',
+            'Egészségügy',
+            'Építőipar, Ingatlan',
+            'Értékesítés, Kereskedelem',
+            'Fizikai, Segéd, Betanított munka',
+            'Gyártás, Termelés',
+            'HR, Munkaügy',
+            'IT programozás, Fejlesztés',
+            'IT üzemeltetés, Telekommunikáció',
+            'Jog, Jogi tanácsadás',
+            'Marketing, Média, PR',
+            'Mérnök',
+            'Mezőgazdaság, Környezet',
+            'Oktatás, Tudomány, Sport',
+            'Pénzügy, Könyvelés',
+            'Szállítás, Beszerzés, Logisztika',
+            'Ügyfélszolgálat, Vevőszolgálat',
+            'Vendéglátás, Idegenforgalom',
+          ]}
           name='eventType'
           undertext={null}
           error={errors['eventType']}
