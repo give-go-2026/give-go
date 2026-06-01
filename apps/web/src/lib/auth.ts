@@ -53,6 +53,11 @@ export const auth = betterAuth({
         required: false,
         input: true,
       },
+      description: {
+        type: 'string',
+        required: false,
+        input: true,
+      },
     },
   },
   plugins: [nextCookies()],

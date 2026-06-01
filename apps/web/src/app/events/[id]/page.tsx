@@ -111,7 +111,9 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         </section>
         <section className='bg-background mb-50 flex w-full flex-col justify-between gap-4 rounded-3xl p-6 shadow-2xl'>
           <h3 className='text-2xl font-bold tracking-wide'>Szervezeti információk</h3>
-          <p className='grow'>{card.organizer.description}</p>
+          {card.organizer.description && (
+            <p className='grow whitespace-pre-line'>{card.organizer.description}</p>
+          )}
           <Link
             href={website ? `${website}` : '#'}
             className='mx-auto block cursor-default text-center text-lg text-blue-500 hover:underline'

@@ -48,6 +48,7 @@ export async function registerOrgAction(
   const website = (formData.get('orgWeb') as string).trim();
   const contactName = (formData.get('userName') as string).trim();
   const contactPhone = (formData.get('userPhone') as string).trim();
+  const description = (formData.get('orgDescription') as string).trim();
 
   const values = {
     orgName: name,
@@ -56,6 +57,7 @@ export async function registerOrgAction(
     orgWeb: website,
     userName: contactName,
     userPhone: contactPhone,
+    orgDescription: description,
   };
 
   const fieldErrors: Record<string, string> = {};
@@ -81,6 +83,7 @@ export async function registerOrgAction(
         website,
         contactName,
         contactPhone,
+        description,
       },
     });
   } catch (e) {

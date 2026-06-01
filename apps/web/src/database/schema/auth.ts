@@ -13,6 +13,7 @@ export const user = pgTable('user', {
   website: text('website'),
   contactName: text('contact_name'),
   contactPhone: text('contact_phone'),
+  description: text('description'),
 });
 
 export const session = pgTable('session', {

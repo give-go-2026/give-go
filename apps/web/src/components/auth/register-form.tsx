@@ -26,8 +26,8 @@ export function RegisterForm({ intro, columns = 1, showLoginLink = true }: Regis
     >
       {intro ?? <h1 className='text-3xl font-bold text-gray-800'>Szervezeti regisztráció</h1>}
       <div className={fieldsClass}>
-        <label>
-          <span className='mb-1 block text-sm font-medium text-gray-700'>Szervezet neve</span>
+        <div className='flex flex-col'>
+          <label className='pb-1'>Melyik szervezetet képviseled:</label>
           <input
             type='text'
             name='orgName'
@@ -37,32 +37,32 @@ export function RegisterForm({ intro, columns = 1, showLoginLink = true }: Regis
             autoComplete='organization'
           />
           <FieldError message={fe.orgName} />
-        </label>
-        <label>
-          <span className='mb-1 block text-sm font-medium text-gray-700'>E-mail cím</span>
+        </div>
+        <div className='flex flex-col'>
+          <label className='pb-1'>Kapcsolattartói email cím:</label>
           <input
             type='email'
             name='email'
             defaultValue={values.email ?? ''}
             className={inputClass(fe.email)}
-            placeholder='pelda@gmail.com'
+            placeholder='pl.: onkentes@email.com'
             autoComplete='email'
           />
           <FieldError message={fe.email} />
-        </label>
-        <label>
-          <span className='mb-1 block text-sm font-medium text-gray-700'>Jelszó</span>
+        </div>
+        <div className='flex flex-col'>
+          <label className='pb-1'>Jelszó:</label>
           <input
             type='password'
             name='password'
-            placeholder='••••••••'
+            placeholder='Jelszó'
             className={inputClass(fe.password)}
             autoComplete='new-password'
           />
           <FieldError message={fe.password} />
-        </label>
-        <label>
-          <span className='mb-1 block text-sm font-medium text-gray-700'>Nyilvántartási szám</span>
+        </div>
+        <div className='flex flex-col'>
+          <label className='pb-1'>Szervezet nyilvántartási száma:</label>
           <input
             type='text'
             name='orgNum'
@@ -71,9 +71,9 @@ export function RegisterForm({ intro, columns = 1, showLoginLink = true }: Regis
             placeholder='pl.: 01-01-0001234'
           />
           <FieldError message={fe.orgNum} />
-        </label>
-        <label>
-          <span className='mb-1 block text-sm font-medium text-gray-700'>Weboldal</span>
+        </div>
+        <div className='flex flex-col'>
+          <label className='pb-1'>Szervezet publikus weboldala:</label>
           <input
             type='text'
             name='orgWeb'
@@ -81,9 +81,9 @@ export function RegisterForm({ intro, columns = 1, showLoginLink = true }: Regis
             className={inputClass()}
             placeholder='pl.: www.onkentes.com'
           />
-        </label>
-        <label>
-          <span className='mb-1 block text-sm font-medium text-gray-700'>Kapcsolattartó neve</span>
+        </div>
+        <div className='flex flex-col'>
+          <label className='pb-1'>Ki a kapcsolattartó:</label>
           <input
             type='text'
             name='userName'
@@ -93,9 +93,9 @@ export function RegisterForm({ intro, columns = 1, showLoginLink = true }: Regis
             autoComplete='name'
           />
           <FieldError message={fe.userName} />
-        </label>
-        <label>
-          <span className='mb-1 block text-sm font-medium text-gray-700'>Telefonszám</span>
+        </div>
+        <div className='flex flex-col'>
+          <label className='pb-1'>Kapcsolattartói telefonszám:</label>
           <input
             type='tel'
             name='userPhone'
@@ -104,8 +104,21 @@ export function RegisterForm({ intro, columns = 1, showLoginLink = true }: Regis
             placeholder='pl.: 06301234567'
             autoComplete='tel'
           />
+          <span className='pt-1 text-sm text-gray-400'>
+            Ezen a számon csak mi fogunk keresni, hogy hitelesítsük az eseményt
+          </span>
           <FieldError message={fe.userPhone} />
-        </label>
+        </div>
+        <div className={`flex flex-col ${columns === 2 ? 'md:col-span-2' : ''}`}>
+          <label className='pb-1'>Mutasd be a szervezetet:</label>
+          <textarea
+            name='orgDescription'
+            defaultValue={values.orgDescription ?? ''}
+            rows={4}
+            className={`${inputClass()} min-h-40 resize-y align-top`}
+            placeholder='Mutasd be röviden a szervezetet, küldetését, tevékenységét…'
+          />
+        </div>
       </div>
       {state?.error && <p className='text-sm text-red-500'>{state.error}</p>}
       <Button
