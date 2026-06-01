@@ -19,6 +19,7 @@ export type CreateEventInput = {
   helpFrequency: string;
   helpMode: HelpMode;
   desc: string;
+  eventImages?: string[];
   eventStartDate?: string;
   eventStartTime?: string;
   eventEndDate?: string;
@@ -65,8 +66,8 @@ export async function createEventAction(input: CreateEventInput): Promise<{ erro
         seriesEndDate: input.seriesEndDate ?? null,
         selectedDays: input.selectedDays ? JSON.stringify(input.selectedDays) : null,
         perDayTimes: input.perDayTimes ? JSON.stringify(input.perDayTimes) : null,
-        imageUrl: null,
-        galleryImages: '[]',
+        imageUrl: input.eventImages?.[0] ?? null,
+        galleryImages: JSON.stringify(input.eventImages ?? []),
       })
       .returning();
 

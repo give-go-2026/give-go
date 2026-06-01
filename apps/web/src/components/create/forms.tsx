@@ -163,6 +163,9 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
     const result = thirdSchema.safeParse({ desc: get('desc') });
     if (!result.success) Object.assign(errs, zodToRecord(result.error));
 
+    const eventImages: string[] = JSON.parse(get('eventImages') || '[]');
+    if (eventImages.length === 0) errs['eventImages'] = 'Legalább egy kép feltöltése kötelező!';
+
     return errs;
   }
 
@@ -208,6 +211,7 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           helpFrequency: frequency,
           helpMode: (get('helpMode') || 'Személyes') as 'Online' | 'Személyes' | 'Hibrid',
           desc: get('desc'),
+          eventImages: JSON.parse(get('eventImages') || '[]'),
           eventStartDate: get('eventStartDate') || undefined,
           eventStartTime: get('eventStartTime') || undefined,
           eventEndDate: get('eventEndDate') || undefined,

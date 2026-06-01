@@ -1,4 +1,5 @@
 import { Apply } from '@/components/landing/card-buttons';
+import Header from '@/components/create/header';
 import { fetchCardById, fetchWebsiteById, formatDuration } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -17,10 +18,10 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   const website = await fetchWebsiteById(Number(id));
 
   return (
-    <div className='min-h-screen w-full overflow-hidden'>
+    <div className='min-h-screen overflow-hidden'>
+      <Header text='Részletes információk' />
       <header className='h-auto w-full'>
-        <section className='main-gradient h-28 w-full'></section>
-        <section className='mx-auto -mt-25 w-full max-w-416 px-3 py-6 md:px-30 md:py-8'>
+        <section className='mx-auto -mt-37 w-full max-w-416 px-3 py-6 md:px-30 md:py-8'>
           <div className='bg-background w-full rounded-3xl shadow-2xl'>
             <div className='flex flex-1 flex-col justify-center gap-3 p-6'>
               <div>

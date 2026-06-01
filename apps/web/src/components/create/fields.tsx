@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { fileToDataUrl } from '@/lib/images';
 
 const MONTH_NAMES = [
   'Január',
@@ -295,7 +296,7 @@ export function LongField({
   );
 }
 
-type UploadedFile = { name: string; size: number };
+type UploadedFile = { name: string; size: number; url?: string };
 
 const ARROW_ICON = (
   <svg
@@ -327,6 +328,7 @@ export function UploadField({
   multiple = false,
   maxFiles,
   maxSizeMB = 40,
+  asDataUrl = false,
   error,
 }: {
   label: string;
@@ -336,6 +338,7 @@ export function UploadField({
   multiple?: boolean;
   maxFiles?: number;
   maxSizeMB?: number;
+  asDataUrl?: boolean;
   error?: string;
 }) {
   const [files, setFiles] = useState<UploadedFile[]>([]);
@@ -349,22 +352,35 @@ export function UploadField({
       if (multiple) {
         try {
           const saved: string[] = JSON.parse(sessionStorage.getItem(name) ?? '[]');
-          if (saved.length > 0) setFiles(saved.map((n) => ({ name: n, size: 0 })));
+          if (saved.length > 0) {
+            setFiles(
+              saved.map((s, i) =>
+                asDataUrl ? { name: `Kép ${i + 1}`, size: 0, url: s } : { name: s, size: 0 },
+              ),
+            );
+          }
         } catch {}
       } else {
         const saved = sessionStorage.getItem(name) ?? '';
-        if (saved) setFiles([{ name: saved, size: 0 }]);
+        if (saved) setFiles([asDataUrl ? { name: 'Kép', size: 0, url: saved } : { name: saved, size: 0 }]);
       }
       return;
     }
-    sessionStorage.setItem(
-      name,
-      multiple ? JSON.stringify(files.map((f) => f.name)) : (files[0]?.name ?? ''),
-    );
-  }, [files, name, multiple]);
+    const serialize = (f: UploadedFile) => (asDataUrl ? (f.url ?? '') : f.name);
+    try {
+      sessionStorage.setItem(
+        name,
+        multiple ? JSON.stringify(files.map(serialize)) : serialize(files[0] ?? { name: '', size: 0 }),
+      );
+    } catch {
+      // Most likely the sessionStorage quota was exceeded by the encoded images.
+      setFileError('A képek túl nagyok. Tölts fel kevesebb vagy kisebb képet.');
+    }
+  }, [files, name, multiple, asDataUrl]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(event.target.files ?? []);
+    event.target.value = '';
     if (!selected.length) return;
 
     const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml'];
@@ -381,22 +397,32 @@ export function UploadField({
       }
     }
 
-    setFileError(null);
-
-    if (multiple) {
-      setFiles((prev) => {
-        const merged = [...prev, ...selected.map((f) => ({ name: f.name, size: f.size }))];
-        if (maxFiles && merged.length > maxFiles) {
-          setFileError(`Maximum ${maxFiles} kép tölthető fel.`);
-          return prev;
-        }
-        return merged;
-      });
-    } else {
-      setFiles([{ name: selected[0]!.name, size: selected[0]!.size }]);
+    if (maxFiles && multiple && files.length + selected.length > maxFiles) {
+      setFileError(`Maximum ${maxFiles} kép tölthető fel.`);
+      return;
     }
 
-    event.target.value = '';
+    setFileError(null);
+
+    let entries: UploadedFile[];
+    if (asDataUrl) {
+      try {
+        entries = await Promise.all(
+          selected.map(async (f) => ({ name: f.name, size: f.size, url: await fileToDataUrl(f) })),
+        );
+      } catch {
+        setFileError('A kép feldolgozása nem sikerült. Próbáld újra!');
+        return;
+      }
+    } else {
+      entries = selected.map((f) => ({ name: f.name, size: f.size }));
+    }
+
+    if (multiple) {
+      setFiles((prev) => [...prev, ...entries]);
+    } else {
+      setFiles([entries[0]!]);
+    }
   };
 
   function removeFile(index: number) {
@@ -437,7 +463,32 @@ export function UploadField({
         {label && <label className='pb-1'>{label}</label>}
         <div className='flex items-start gap-6'>
           <div className='flex w-44 shrink-0 flex-col'>{uploadButton}</div>
-          {files.length > 0 && (
+          {files.length > 0 && asDataUrl && (
+            <div className='flex flex-1 flex-wrap gap-2 pt-1'>
+              {files.map((file, i) => (
+                <div
+                  key={i}
+                  className='group relative h-20 w-20 overflow-hidden rounded-md border border-gray-200'
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={file.url}
+                    alt={`Kép ${i + 1}`}
+                    className='h-full w-full object-cover'
+                  />
+                  <button
+                    type='button'
+                    onClick={() => removeFile(i)}
+                    className='absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100'
+                    aria-label='Kép törlése'
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {files.length > 0 && !asDataUrl && (
             <div className='grid flex-1 grid-cols-2 gap-x-8 gap-y-1 pt-1'>
               {files.map((file, i) => (
                 <div
