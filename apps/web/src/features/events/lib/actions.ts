@@ -83,7 +83,8 @@ export async function createEventAction(input: CreateEventInput): Promise<{ erro
         );
       }
     }
-  } catch {
+  } catch (error) {
+    console.error('Esemény mentése sikertelen:', error);
     return { error: 'Hiba történt az esemény mentése során. Próbáld újra!' };
   }
 
