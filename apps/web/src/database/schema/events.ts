@@ -1,7 +1,39 @@
-import { boolean, integer, pgEnum, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  integer,
+  pgEnum,
+  pgTable,
+  primaryKey,
+  serial,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core';
 import { user } from './auth';
 
-export const workTypeEnum = pgEnum('work_type', ['fizikai', 'szociális', 'irodai']);
+export const workTypeEnum = pgEnum('work_type', [
+  'fizikai',
+  'szociális',
+  'irodai',
+  'Adminisztráció, Asszisztens, Irodai munka',
+  'Projekt Menedzsment',
+  'Egészségügy',
+  'Építőipar, Ingatlan',
+  'Értékesítés, Kereskedelem',
+  'Fizikai, Segéd, Betanított munka',
+  'Gyártás, Termelés',
+  'HR, Munkaügy',
+  'IT programozás, Fejlesztés',
+  'IT üzemeltetés, Telekommunikáció',
+  'Jog, Jogi tanácsadás',
+  'Marketing, Média, PR',
+  'Mérnök',
+  'Mezőgazdaság, Környezet',
+  'Oktatás, Tudomány, Sport',
+  'Pénzügy, Könyvelés',
+  'Szállítás, Beszerzés, Logisztika',
+  'Ügyfélszolgálat, Vevőszolgálat',
+  'Vendéglátás, Idegenforgalom',
+]);
 export const helpModeEnum = pgEnum('help_mode', ['Online', 'Személyes', 'Hibrid']);
 
 export const tags = pgTable('tags', {

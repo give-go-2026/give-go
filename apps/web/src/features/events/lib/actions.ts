@@ -7,7 +7,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { inArray } from 'drizzle-orm';
 
-type WorkType = 'fizikai' | 'szociális' | 'irodai';
+type WorkType = (typeof events.$inferInsert)['workType'];
 type HelpMode = 'Online' | 'Személyes' | 'Hibrid';
 
 export type CreateEventInput = {

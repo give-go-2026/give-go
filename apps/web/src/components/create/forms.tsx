@@ -4,7 +4,7 @@ import { z } from 'zod';
 import Button from '@repo/ui/button';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { createEventAction } from '@/features/events/lib/actions';
+import { createEventAction, type CreateEventInput } from '@/features/events/lib/actions';
 
 const isDev = process.env.NODE_ENV === 'development';
 import FormOne from './form-one';
@@ -206,7 +206,7 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           eventName: get('eventName'),
           eventAddress: get('eventAddress'),
           eventTheme: get('eventTheme'),
-          eventType: (get('eventType') || 'fizikai') as 'fizikai' | 'szociális' | 'irodai',
+          eventType: (get('eventType') || 'fizikai') as CreateEventInput['eventType'],
           eventTags: JSON.parse(get('eventTags') || '[]'),
           helpFrequency: frequency,
           helpMode: (get('helpMode') || 'Személyes') as 'Online' | 'Személyes' | 'Hibrid',
