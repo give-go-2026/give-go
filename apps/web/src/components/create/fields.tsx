@@ -145,17 +145,28 @@ export function AddressField({
 }) {
   const [value, setValue] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [approximate, setApproximate] = useState(false);
   const isFirstRun = useRef(true);
+  const approxFirstRun = useRef(true);
 
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       const saved = sessionStorage.getItem(name) ?? '';
       if (saved) setValue(saved);
+      setApproximate(sessionStorage.getItem(`${name}Approx`) === 'true');
       return;
     }
     sessionStorage.setItem(name, value);
   }, [value, name]);
+
+  useEffect(() => {
+    if (approxFirstRun.current) {
+      approxFirstRun.current = false;
+      return;
+    }
+    sessionStorage.setItem(`${name}Approx`, String(approximate));
+  }, [approximate, name]);
 
   function syncActive(input: HTMLInputElement) {
     const caret = input.selectionStart ?? input.value.length;
@@ -167,38 +178,60 @@ export function AddressField({
     <div className='flex flex-col'>
       <div className='flex items-center gap-5'>
         <label className='pb-1'>{label}</label>
-        <div className='mb-1.5 flex flex-wrap gap-1.5'>
-          {ADDRESS_PARTS.map((part, i) => (
-            <span
-              key={part}
-              className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors ${
-                i === activeIndex ? 'bg-cyan-900 text-white' : 'bg-gray-100 text-gray-500'
-              }`}
-            >
-              {part}
-            </span>
-          ))}
-        </div>
+        {!approximate && (
+          <div className='mb-1.5 flex flex-wrap gap-1.5'>
+            {ADDRESS_PARTS.map((part, i) => (
+              <span
+                key={part}
+                className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                  i === activeIndex ? 'bg-cyan-900 text-white' : 'bg-gray-100 text-gray-500'
+                }`}
+              >
+                {part}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
-      <input
-        className={`rounded-md border px-3 py-2 ${error ? 'border-red-400' : 'border-gray-300'}`}
-        name={name}
-        type='text'
-        placeholder='pl.: 310123, Arad, Pócsika utca, 12'
-        value={value}
-        onChange={(event) => {
-          setValue(event.target.value);
-          syncActive(event.target);
-        }}
-        onSelect={(event) => syncActive(event.currentTarget)}
-        onClick={(event) => syncActive(event.currentTarget)}
-        onKeyUp={(event) => syncActive(event.currentTarget)}
-      />
+      {approximate ? (
+        <input
+          className={`rounded-md border px-3 py-2 ${error ? 'border-red-400' : 'border-gray-300'}`}
+          name={name}
+          type='text'
+          placeholder='pl.: Arad környéke / online'
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+        />
+      ) : (
+        <input
+          className={`rounded-md border px-3 py-2 ${error ? 'border-red-400' : 'border-gray-300'}`}
+          name={name}
+          type='text'
+          placeholder='pl.: 310123, Arad, Pócsika utca, 12'
+          value={value}
+          onChange={(event) => {
+            setValue(event.target.value);
+            syncActive(event.target);
+          }}
+          onSelect={(event) => syncActive(event.currentTarget)}
+          onClick={(event) => syncActive(event.currentTarget)}
+          onKeyUp={(event) => syncActive(event.currentTarget)}
+        />
+      )}
       <span className='pt-1 text-sm text-gray-400'>
-        Add meg vesszővel elválasztva: {ADDRESS_PARTS.join(', ')}.
+        {approximate
+          ? 'Add meg a helyszínt szabadon (pl. település vagy „online").'
+          : `Add meg vesszővel elválasztva: ${ADDRESS_PARTS.join(', ')}.`}
       </span>
       {error && <span className='pt-0.5 text-sm text-red-500'>{error}</span>}
+      <button
+        type='button'
+        onClick={() => setApproximate((prev) => !prev)}
+        className='mt-1 w-fit text-left text-sm text-cyan-700 underline'
+      >
+        {approximate ? 'Pontos cím megadása' : 'Nem szükséges pontos cím megadása'}
+      </button>
     </div>
   );
 }

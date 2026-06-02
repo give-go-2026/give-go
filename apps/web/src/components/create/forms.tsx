@@ -72,6 +72,8 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
     if (isDev) return {};
     const errs: FieldErrors = {};
 
+    const approxAddress = get('eventAddressApprox') === 'true';
+
     const base = z
       .object({
         eventName: z.string().min(1, 'Esemény neve kötelező!'),
@@ -80,6 +82,7 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           .min(1, 'Esemény helyszíne kötelező!')
           .refine(
             (v) =>
+              approxAddress ||
               v
                 .split(',')
                 .map((s) => s.trim())
