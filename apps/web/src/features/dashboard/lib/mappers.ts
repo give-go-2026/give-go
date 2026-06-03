@@ -51,9 +51,8 @@ export function toEventData(event: DbEvent, tagNames: string[]): EventData {
     // One-time fields
     eventStartDate: event.isRecurring ? '' : start.date,
     eventStartTime: event.isRecurring ? '' : start.time,
-    eventEndTime: event.isRecurring ? '' : end.time,
     eventEndDate: event.isRecurring ? '' : end.date,
-    eventCloseTime: '',
+    eventCloseTime: event.isRecurring ? '' : end.time,
     // Recurring fields
     seriesStartDate: event.seriesStartDate ?? '',
     seriesEndDate: event.seriesEndDate ?? '',
@@ -79,7 +78,7 @@ export function dbValuesFromEvent(
 
   const endDate = isRecurring
     ? `${event.seriesEndDate} ${event.endTime}`.trim()
-    : `${event.eventEndDate} ${event.eventEndTime}`.trim();
+    : `${event.eventEndDate} ${event.eventCloseTime}`.trim();
 
   return {
     title: event.eventName,

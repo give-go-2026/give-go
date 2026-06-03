@@ -154,20 +154,12 @@ export function EditModal({
                     onChange={(v) => update('eventStartDate', v)}
                     placeholder='pl.: 2025.06.15.'
                   />
-                  <div className='grid grid-cols-2 gap-2'>
-                    <Field
-                      label='Kezdés'
-                      value={form.eventStartTime}
-                      onChange={(v) => update('eventStartTime', v)}
-                      placeholder='09:00'
-                    />
-                    <Field
-                      label='Zárás'
-                      value={form.eventEndTime}
-                      onChange={(v) => update('eventEndTime', v)}
-                      placeholder='17:00'
-                    />
-                  </div>
+                  <Field
+                    label='Kezdés'
+                    value={form.eventStartTime}
+                    onChange={(v) => update('eventStartTime', v)}
+                    placeholder='09:00'
+                  />
                   <Field
                     label='Záró dátum'
                     value={form.eventEndDate}

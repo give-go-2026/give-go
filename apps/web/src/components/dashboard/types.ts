@@ -18,7 +18,6 @@ export type EventData = {
   helpMode: string;
   eventStartDate: string;
   eventStartTime: string;
-  eventEndTime: string;
   eventEndDate: string;
   eventCloseTime: string;
   seriesStartDate: string;

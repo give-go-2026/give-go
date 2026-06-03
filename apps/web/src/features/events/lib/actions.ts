@@ -23,7 +23,7 @@ export type CreateEventInput = {
   eventStartDate?: string;
   eventStartTime?: string;
   eventEndDate?: string;
-  eventEndTime?: string;
+  eventCloseTime?: string;
   seriesStartDate?: string;
   seriesEndDate?: string;
   selectedDays?: number[];
@@ -46,7 +46,7 @@ export async function createEventAction(input: CreateEventInput): Promise<{ erro
 
   const endDate = isRecurring
     ? `${input.seriesEndDate ?? ''} ${input.endTime ?? ''}`.trim()
-    : `${input.eventEndDate ?? ''} ${input.eventEndTime ?? ''}`.trim();
+    : `${input.eventEndDate ?? ''} ${input.eventCloseTime ?? ''}`.trim();
 
   try {
     const [event] = await db

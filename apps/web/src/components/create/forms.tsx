@@ -107,14 +107,12 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
         .object({
           eventStartDate: z.string().min(1, 'Esemény kezdő dátuma kötelező!'),
           eventStartTime: z.string().min(1, 'Kezdés időpontja kötelező!'),
-          eventEndTime: z.string().min(1, 'Záró időpontja kötelező!'),
           eventEndDate: z.string().min(1, 'Esemény záró dátuma kötelező!'),
           eventCloseTime: z.string().min(1, 'Zárás időpontja kötelező!'),
         })
         .safeParse({
           eventStartDate: get('eventStartDate'),
           eventStartTime: get('eventStartTime'),
-          eventEndTime: get('eventEndTime'),
           eventEndDate: get('eventEndDate'),
           eventCloseTime: get('eventCloseTime'),
         });
@@ -218,7 +216,7 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           eventStartDate: get('eventStartDate') || undefined,
           eventStartTime: get('eventStartTime') || undefined,
           eventEndDate: get('eventEndDate') || undefined,
-          eventEndTime: get('eventEndTime') || undefined,
+          eventCloseTime: get('eventCloseTime') || undefined,
           seriesStartDate: get('seriesStartDate') || undefined,
           seriesEndDate: get('seriesEndDate') || undefined,
           selectedDays: isRecurring ? selectedDays : undefined,

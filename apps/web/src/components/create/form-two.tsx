@@ -164,16 +164,14 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
 
       {frequencyIndex === 1 ? (
         <div className='flex flex-col gap-4'>
-          <div className='grid grid-cols-4 gap-4'>
-            <div className='col-span-2'>
-              <DatePickerField
-                label='Esemény kezdő dátuma'
-                name='eventStartDate'
-                undertext={null}
-                error={errors['eventStartDate']}
-                onValueChange={setStartDate}
-              />
-            </div>
+          <div className='grid grid-cols-2 gap-4'>
+            <DatePickerField
+              label='Esemény kezdő dátuma'
+              name='eventStartDate'
+              undertext={null}
+              error={errors['eventStartDate']}
+              onValueChange={setStartDate}
+            />
             <TimePickerField
               label='Kezdés időpontja'
               name='eventStartTime'
@@ -181,25 +179,16 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
               error={errors['eventStartTime']}
               onValueChange={setStartTime}
             />
-            <TimePickerField
-              label='Záró időpontja'
-              name='eventEndTime'
-              undertext={null}
-              error={errors['eventEndTime']}
-              minTime={startTime || undefined}
-            />
           </div>
-          <div className='grid grid-cols-4 gap-4'>
-            <div className='col-span-2'>
-              <DatePickerField
-                label='Esemény záró dátuma'
-                name='eventEndDate'
-                undertext={null}
-                error={errors['eventEndDate']}
-                minDate={startDate || undefined}
-                onValueChange={setEndDate}
-              />
-            </div>
+          <div className='grid grid-cols-2 gap-4'>
+            <DatePickerField
+              label='Esemény záró dátuma'
+              name='eventEndDate'
+              undertext={null}
+              error={errors['eventEndDate']}
+              minDate={startDate || undefined}
+              onValueChange={setEndDate}
+            />
             <TimePickerField
               label='Zárás időpontja'
               name='eventCloseTime'
