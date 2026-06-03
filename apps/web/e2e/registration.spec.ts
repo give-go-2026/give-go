@@ -9,9 +9,8 @@ test.describe('User Registration', () => {
     // Submit empty form
     await page.click('button[type="submit"]');
 
-    // Should show validation errors
-    await page.waitForTimeout(1000);
-    const pageContent = await page.textContent('body');
+    // Should show validation errors - wait for error messages to appear
+    await expect(page.locator('text=kötelező').first()).toBeVisible({ timeout: 5000 });
     // Check that we're still on the register page (not redirected)
     expect(page.url()).toContain('/auth/register');
   });
@@ -28,9 +27,9 @@ test.describe('User Registration', () => {
     await page.fill('input[name="userPhone"]', TEST_USER.contactPhone);
 
     await page.click('button[type="submit"]');
-    await page.waitForTimeout(1000);
 
     // Should stay on registration page due to invalid email
+    await expect(page.locator('text=e-mail').first()).toBeVisible({ timeout: 5000 });
     expect(page.url()).toContain('/auth/register');
   });
 
@@ -46,12 +45,10 @@ test.describe('User Registration', () => {
     await page.fill('input[name="userPhone"]', TEST_USER.contactPhone);
 
     await page.click('button[type="submit"]');
-    await page.waitForTimeout(1000);
 
-    // Should stay on registration page
+    // Should stay on registration page with password error
+    await expect(page.locator('text=8 karakter')).toBeVisible({ timeout: 5000 });
     expect(page.url()).toContain('/auth/register');
-    const body = await page.textContent('body');
-    expect(body).toContain('8 karakter');
   });
 
   test('should successfully register a new organization', async ({ page }) => {

@@ -2,8 +2,6 @@ import { test, expect } from '@playwright/test';
 import { TEST_USER, TEST_EVENT } from './fixtures/test-fixtures';
 
 test.describe('Event Creation', () => {
-  let page: ReturnType<typeof test.step> extends Promise<infer T> ? T : never;
-
   test('should require authentication to create events', async ({ page }) => {
     await page.goto('/create');
     await page.waitForLoadState('networkidle');

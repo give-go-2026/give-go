@@ -30,9 +30,9 @@ test.describe('User Login', () => {
     await page.waitForLoadState('networkidle');
 
     await page.click('button[type="submit"]');
-    await page.waitForTimeout(1000);
 
-    // Should stay on login page
+    // Should stay on login page with validation errors
+    await expect(page.locator('text=kötelező').first()).toBeVisible({ timeout: 5000 });
     expect(page.url()).toContain('/auth/login');
   });
 
@@ -44,12 +44,10 @@ test.describe('User Login', () => {
     await page.fill('input[name="password"]', 'WrongPassword123!');
 
     await page.click('button[type="submit"]');
-    await page.waitForTimeout(2000);
 
     // Should stay on login page and show error
+    await expect(page.locator('text=Hibás')).toBeVisible({ timeout: 5000 });
     expect(page.url()).toContain('/auth/login');
-    const body = await page.textContent('body');
-    expect(body).toContain('Hibás');
   });
 
   test('should successfully login with valid credentials', async ({ page }) => {
