@@ -13,7 +13,6 @@ export type EventData = {
   eventAddress: string;
   eventTheme: string;
   eventType: string;
-  eventTags: string[];
   helpFrequency: string;
   helpMode: string[];
   eventStartDate: string;
@@ -30,21 +29,6 @@ export type EventData = {
 };
 
 export const DAYS = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
-
-export const ALL_TAGS = [
-  'Idősek',
-  'Gyerekek',
-  'Fiatalok',
-  'Hajléktalanok',
-  'Fogyatékossággal élők',
-  'Szegregátumok',
-  'Iskolák',
-  'Kutyák',
-  'Macskák',
-  'Madarak',
-  'Kacsák',
-  'Fajtamentés',
-];
 
 export const EMPTY_ORG: OrgData = {
   orgName: '',

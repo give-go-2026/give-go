@@ -2,11 +2,11 @@
 
 import { auth } from '@/lib/auth';
 import { db } from '@/database';
-import { events, eventTags, tags } from '@/database/schema';
+import { events } from '@/database/schema';
 import { user } from '@/database/schema/auth';
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type { EventData, OrgData } from '@/components/dashboard/types';
 import { dbValuesFromEvent } from './mappers';
 
@@ -62,20 +62,6 @@ export async function updateEventAction(event: EventData): Promise<ActionResult>
     }
 
     await db.update(events).set(dbValuesFromEvent(event)).where(eq(events.id, eventId));
-
-    // Replace the event's tags to match the edited selection.
-    await db.delete(eventTags).where(eq(eventTags.eventId, eventId));
-
-    if (event.eventTags.length > 0) {
-      const matchedTags = await db
-        .select({ id: tags.id })
-        .from(tags)
-        .where(inArray(tags.name, event.eventTags));
-
-      if (matchedTags.length > 0) {
-        await db.insert(eventTags).values(matchedTags.map((t) => ({ eventId, tagId: t.id })));
-      }
-    }
   } catch {
     return { error: 'Hiba történt az esemény mentése során. Próbáld újra!' };
   }

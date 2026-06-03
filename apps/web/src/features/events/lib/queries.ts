@@ -1,12 +1,53 @@
 import { db } from '@/database';
-import { events, eventTags, tags } from '@/database/schema';
+import { events } from '@/database/schema';
 import { user } from '@/database/schema/auth';
-import { eq, desc, inArray } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import { type EventCard, type Tag } from '@/lib/definitions';
 
 type DbEvent = typeof events.$inferSelect;
 type DbUser = Pick<typeof user.$inferSelect, 'id' | 'name' | 'email' | 'description'>;
-type DbTag = typeof tags.$inferSelect;
+
+// Palette mirrors the seeded tag colors (database/seed.ts).
+const THEME_TAG_COLORS = [
+  '#6C757D',
+  '#0DCAF0',
+  '#198754',
+  '#DC3545',
+  '#FFC107',
+  '#0D6EFD',
+  '#20C997',
+  '#FD7E14',
+  '#E83E8C',
+  '#6F42C1',
+  '#17A2B8',
+  '#28A745',
+];
+
+/** Splits a comma-separated theme string into trimmed, non-empty tag names. */
+function splitTheme(theme: string): string[] {
+  return theme
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/** Deterministically maps a tag name to a palette color, so the same tag is always the same color. */
+function colorForTag(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash * 31 + name.charCodeAt(i)) | 0;
+  }
+  return THEME_TAG_COLORS[Math.abs(hash) % THEME_TAG_COLORS.length]!;
+}
+
+/** Derives the displayed tags from an event's free-text theme field. */
+function themeToTags(theme: string): Tag[] {
+  return splitTheme(theme).map((name, index) => ({
+    id: index,
+    name,
+    color: colorForTag(name),
+  }));
+}
 
 function galleryFromJson(raw: string): string[] {
   try {
@@ -19,13 +60,7 @@ function galleryFromJson(raw: string): string[] {
   }
 }
 
-function toEventCard(event: DbEvent, org: DbUser, eventTagList: DbTag[]): EventCard {
-  const mappedTags: Tag[] = eventTagList.map((t) => ({
-    id: t.id,
-    name: t.name,
-    color: t.color,
-  }));
-
+function toEventCard(event: DbEvent, org: DbUser): EventCard {
   return {
     id: event.id,
     title: event.title,
@@ -33,7 +68,7 @@ function toEventCard(event: DbEvent, org: DbUser, eventTagList: DbTag[]): EventC
     start_date: event.startDate ?? event.seriesStartDate ?? '',
     end_date: event.endDate ?? event.seriesEndDate ?? '',
     description: event.description,
-    tags: mappedTags,
+    tags: themeToTags(event.theme),
     image_url: event.imageUrl ?? '/card-placeholder-image.png',
     organizer: {
       id: 1,
@@ -45,22 +80,15 @@ function toEventCard(event: DbEvent, org: DbUser, eventTagList: DbTag[]): EventC
   };
 }
 
-async function attachTags(eventIds: number[]): Promise<Map<number, DbTag[]>> {
-  if (eventIds.length === 0) return new Map();
+/** Distinct tag names already used across events — the source for tag autocomplete. */
+export async function getUsedTags(): Promise<string[]> {
+  const rows = await db.selectDistinct({ theme: events.theme }).from(events);
 
-  const rows = await db
-    .select({ eventId: eventTags.eventId, tag: tags })
-    .from(eventTags)
-    .innerJoin(tags, eq(eventTags.tagId, tags.id))
-    .where(inArray(eventTags.eventId, eventIds));
-
-  const map = new Map<number, DbTag[]>();
+  const set = new Set<string>();
   for (const row of rows) {
-    const existing = map.get(row.eventId) ?? [];
-    existing.push(row.tag);
-    map.set(row.eventId, existing);
+    for (const name of splitTheme(row.theme)) set.add(name);
   }
-  return map;
+  return [...set].sort((a, b) => a.localeCompare(b, 'hu'));
 }
 
 export async function getEventsByCategory(category: 'upcoming' | 'permanent' | 'popular'): Promise<EventCard[]> {
@@ -81,11 +109,7 @@ export async function getEventsByCategory(category: 'upcoming' | 'permanent' | '
   const validRows = rows.filter((r) => r.user !== null);
   if (validRows.length === 0) return [];
 
-  const tagMap = await attachTags(validRows.map((r) => r.events.id));
-
-  return validRows.map((r) =>
-    toEventCard(r.events, r.user!, tagMap.get(r.events.id) ?? []),
-  );
+  return validRows.map((r) => toEventCard(r.events, r.user!));
 }
 
 export async function getEventById(id: number): Promise<EventCard | null> {
@@ -99,7 +123,5 @@ export async function getEventById(id: number): Promise<EventCard | null> {
   const row = rows[0];
   if (!row || !row.user) return null;
 
-  const tagMap = await attachTags([id]);
-
-  return toEventCard(row.events, row.user, tagMap.get(id) ?? []);
+  return toEventCard(row.events, row.user);
 }

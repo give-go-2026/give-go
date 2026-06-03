@@ -5,12 +5,19 @@ import { AuthGate } from '@/components/auth/gate';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getUsedTags } from '@/features/events/lib/queries';
 
 async function CreateContent() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) return <AuthGate />;
   if (session.user.role !== 'org') redirect('/events');
-  return <Forms startAtEventDetails />;
+  const usedTags = await getUsedTags();
+  return (
+    <Forms
+      startAtEventDetails
+      usedTags={usedTags}
+    />
+  );
 }
 
 export default function CreateFormPage() {

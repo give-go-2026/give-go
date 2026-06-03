@@ -28,7 +28,13 @@ const thirdSchema = z.object({
   desc: z.string().min(1, 'Leírás kötelező!').max(1000, 'Leírás maximum 1000 karakter lehet!'),
 });
 
-export default function Forms({ startAtEventDetails = false }: { startAtEventDetails?: boolean }) {
+export default function Forms({
+  startAtEventDetails = false,
+  usedTags = [],
+}: {
+  startAtEventDetails?: boolean;
+  usedTags?: string[];
+}) {
   const router = useRouter();
   const [page, setPage] = useState(startAtEventDetails ? 1 : 0);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -151,9 +157,6 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
       }
     }
 
-    const eventTags: string[] = JSON.parse(get('eventTags') || '[]');
-    if (eventTags.length === 0) errs['eventTags'] = 'Válassz legalább egy célcsoportot!';
-
     return errs;
   }
 
@@ -208,7 +211,6 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           eventAddress: get('eventAddress'),
           eventTheme: get('eventTheme'),
           eventType: (get('eventType') || 'fizikai') as CreateEventInput['eventType'],
-          eventTags: JSON.parse(get('eventTags') || '[]'),
           helpFrequency: frequency,
           helpMode: JSON.parse(get('helpMode') || '["Személyes"]'),
           desc: get('desc'),
@@ -274,7 +276,10 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           {page === 0 ? (
             <FormOne errors={fieldErrors} />
           ) : page === 1 ? (
-            <FormTwo errors={fieldErrors} />
+            <FormTwo
+              errors={fieldErrors}
+              usedTags={usedTags}
+            />
           ) : (
             <FormThree errors={fieldErrors} />
           )}

@@ -128,35 +128,3 @@ export function SwitchInput(
   );
 }
 
-export function TagInput({
-  tags,
-  value,
-  onChange,
-}: {
-  tags: string[];
-  value: string[];
-  onChange: (v: string[]) => void;
-}) {
-  function toggle(tag: string) {
-    onChange(value.includes(tag) ? value.filter((t) => t !== tag) : [...value, tag]);
-  }
-
-  return (
-    <div className='flex flex-wrap gap-2'>
-      {tags.map((tag) => (
-        <button
-          key={tag}
-          type='button'
-          onClick={() => toggle(tag)}
-          className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
-            value.includes(tag)
-              ? 'border-cyan-900 bg-cyan-900 text-white'
-              : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          {tag}
-        </button>
-      ))}
-    </div>
-  );
-}

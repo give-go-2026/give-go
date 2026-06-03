@@ -6,14 +6,20 @@ import {
   AddressField,
   SwitchField,
   ListField,
-  TagField,
+  TagAutocompleteField,
   DatePickerField,
   TimePickerField,
 } from './fields';
 
 const DAYS = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
 
-export default function FormTwo({ errors }: { errors: Record<string, string> }) {
+export default function FormTwo({
+  errors,
+  usedTags,
+}: {
+  errors: Record<string, string>;
+  usedTags: string[];
+}) {
   const [frequencyIndex, setFrequencyIndex] = useState(0);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [differentTimes, setDifferentTimes] = useState(false);
@@ -82,12 +88,12 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
           error={errors['eventAddress']}
         />
 
-        <FormField
+        <TagAutocompleteField
           label='Esemény által támogatott témák'
           placeholder='pl.: Állatvédelem'
-          type='string'
           name='eventTheme'
-          undertext={'Válaszd kiknek, milyen témában nyújt támogatást az esemény'}
+          suggestions={usedTags}
+          undertext={'Írd be a témákat, és Enterrel add hozzá; a korábban használtak közül választhatsz'}
           error={errors['eventTheme']}
         />
         <ListField
@@ -118,28 +124,6 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
           error={errors['eventType']}
         />
 
-        <div className='col-span-full h-auto'>
-          <TagField
-            label='Tagek'
-            tags={[
-              'Idősek',
-              'Gyerekek',
-              'Fiatalok',
-              'Hajléktalanok',
-              'Fogyatékossággal élők',
-              'Szegregátumok',
-              'Iskolák',
-              'Kutyák',
-              'Macskák',
-              'Madarak',
-              'Kacsák',
-              'Fajtamentés',
-            ]}
-            name='eventTags'
-            undertext={null}
-            error={errors['eventTags']}
-          />
-        </div>
       </div>
 
       <div className='flex flex-col gap-2'>

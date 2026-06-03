@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { fileToDataUrl } from '@/lib/images';
+import { TagAutocomplete } from '@/components/ui/tag-autocomplete';
 
 const MONTH_NAMES = [
   'Január',
@@ -554,16 +555,18 @@ export function UploadField({
   );
 }
 
-export function TagField({
+export function TagAutocompleteField({
   label,
-  tags,
   name,
+  suggestions,
+  placeholder,
   undertext,
   error,
 }: {
   label: string;
-  tags: string[];
   name: string;
+  suggestions: string[];
+  placeholder?: string;
   undertext?: string | null;
   error?: string;
 }) {
@@ -573,45 +576,31 @@ export function TagField({
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
-      try {
-        const saved: string[] = JSON.parse(sessionStorage.getItem(name) ?? '[]');
-        if (saved.length > 0) setSelected(saved);
-      } catch {}
+      const saved = sessionStorage.getItem(name) ?? '';
+      if (saved) {
+        const parts = saved
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        if (parts.length > 0) setSelected(parts);
+      }
       return;
     }
-    sessionStorage.setItem(name, JSON.stringify(selected));
+    sessionStorage.setItem(name, selected.join(', '));
   }, [selected, name]);
-
-  function toggle(tag: string) {
-    setSelected((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
-  }
 
   return (
     <div className='flex flex-col gap-2'>
       <label>{label}</label>
-      <div className='flex flex-row flex-wrap gap-2'>
-        {tags.map((tag) => (
-          <button
-            key={tag}
-            type='button'
-            onClick={() => toggle(tag)}
-            className={`rounded-full border px-5 py-2.5 text-base font-medium transition-colors ${
-              selected.includes(tag)
-                ? 'border-cyan-900 bg-cyan-900 text-white'
-                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            {tag}
-          </button>
-        ))}
-      </div>
+      <TagAutocomplete
+        value={selected}
+        onChange={setSelected}
+        suggestions={suggestions}
+        placeholder={placeholder}
+        error={Boolean(error)}
+      />
       {undertext && <span className='text-sm text-gray-400'>{undertext}</span>}
       {error && <span className='text-sm text-red-500'>{error}</span>}
-      <input
-        type='hidden'
-        name={name}
-        value={JSON.stringify(selected)}
-      />
     </div>
   );
 }

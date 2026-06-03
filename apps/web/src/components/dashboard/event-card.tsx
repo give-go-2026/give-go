@@ -23,6 +23,11 @@ export function EventCard({
       ? event.selectedDays.map((i) => DAYS[i]).join(', ')
       : null;
 
+  const themeTags = event.eventTheme
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
   return (
     <div className='flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md'>
       <div className='flex flex-wrap gap-1.5'>
@@ -47,9 +52,9 @@ export function EventCard({
         {dayDisplay && <span className='mt-0.5 block text-xs text-gray-400'>{dayDisplay}</span>}
       </div>
 
-      {event.eventTags.length > 0 && (
+      {themeTags.length > 0 && (
         <div className='flex flex-wrap gap-1'>
-          {event.eventTags.map((tag) => (
+          {themeTags.map((tag) => (
             <span
               key={tag}
               className='rounded-full border border-gray-200 px-2.5 py-0.5 text-xs text-gray-600'

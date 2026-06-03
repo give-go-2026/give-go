@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Field, TextareaField, SelectField, SwitchInput, TagInput } from './fields';
-import { DAYS, ALL_TAGS } from './types';
+import { Field, TextareaField, SelectField, SwitchInput } from './fields';
+import { DAYS } from './types';
 import type { EventData } from './types';
 import { fileToDataUrl } from '@/lib/images';
+import { TagAutocomplete } from '@/components/ui/tag-autocomplete';
 
 const ARROW_ICON = (
   <svg
@@ -24,10 +25,12 @@ const ARROW_ICON = (
 
 export function EditModal({
   event,
+  usedTags,
   onClose,
   onSave,
 }: {
   event: EventData;
+  usedTags: string[];
   onClose: () => void;
   onSave: (e: EventData) => void;
 }) {
@@ -104,26 +107,23 @@ export function EditModal({
                   onChange={(v) => update('eventAddress', v)}
                   placeholder='pl.: Budapest, Példa utca 12.'
                 />
-                <Field
-                  label='Támogatott témák'
-                  value={form.eventTheme}
-                  onChange={(v) => update('eventTheme', v)}
-                  placeholder='pl.: Állatvédelem'
-                />
+                <div className='flex flex-col'>
+                  <label className='pb-1 text-sm'>Támogatott témák</label>
+                  <TagAutocomplete
+                    value={form.eventTheme
+                      .split(',')
+                      .map((s) => s.trim())
+                      .filter(Boolean)}
+                    onChange={(arr) => update('eventTheme', arr.join(', '))}
+                    suggestions={usedTags}
+                    placeholder='pl.: Állatvédelem'
+                  />
+                </div>
                 <SelectField
                   label='Munka típusa'
                   value={form.eventType}
                   onChange={(v) => update('eventType', v)}
                   options={['fizikai', 'szociális', 'irodai']}
-                />
-              </div>
-
-              <div className='flex flex-col gap-2'>
-                <label className='text-sm'>Tagek</label>
-                <TagInput
-                  tags={ALL_TAGS}
-                  value={form.eventTags}
-                  onChange={(v) => update('eventTags', v)}
                 />
               </div>
 

@@ -35,7 +35,7 @@ export function toOrgData(u: DbUser): OrgData {
   };
 }
 
-export function toEventData(event: DbEvent, tagNames: string[]): EventData {
+export function toEventData(event: DbEvent): EventData {
   const start = splitDateTime(event.startDate);
   const end = splitDateTime(event.endDate);
 
@@ -45,7 +45,6 @@ export function toEventData(event: DbEvent, tagNames: string[]): EventData {
     eventAddress: event.address,
     eventTheme: event.theme,
     eventType: event.workType,
-    eventTags: tagNames,
     helpFrequency: event.isRecurring ? 'Rendszeres' : 'Egyszeri',
     helpMode: parseJsonArray<string>(event.helpMode),
     // One-time fields

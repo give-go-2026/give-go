@@ -2,10 +2,9 @@
 
 import { auth } from '@/lib/auth';
 import { db } from '@/database';
-import { events, eventTags, tags } from '@/database/schema';
+import { events } from '@/database/schema';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { inArray } from 'drizzle-orm';
 
 type WorkType = (typeof events.$inferInsert)['workType'];
 
@@ -14,7 +13,6 @@ export type CreateEventInput = {
   eventAddress: string;
   eventTheme: string;
   eventType: WorkType;
-  eventTags: string[];
   helpFrequency: string;
   helpMode: string[];
   desc: string;
@@ -48,40 +46,24 @@ export async function createEventAction(input: CreateEventInput): Promise<{ erro
     : `${input.eventEndDate ?? ''} ${input.eventCloseTime ?? ''}`.trim();
 
   try {
-    const [event] = await db
-      .insert(events)
-      .values({
-        organizerId: session.user.id,
-        title: input.eventName,
-        address: input.eventAddress,
-        theme: input.eventTheme,
-        workType: input.eventType,
-        description: input.desc,
-        isRecurring,
-        helpMode: JSON.stringify(input.helpMode),
-        startDate: startDate || null,
-        endDate: endDate || null,
-        seriesStartDate: input.seriesStartDate ?? null,
-        seriesEndDate: input.seriesEndDate ?? null,
-        selectedDays: input.selectedDays ? JSON.stringify(input.selectedDays) : null,
-        perDayTimes: input.perDayTimes ? JSON.stringify(input.perDayTimes) : null,
-        imageUrl: input.eventImages?.[0] ?? null,
-        galleryImages: JSON.stringify(input.eventImages ?? []),
-      })
-      .returning();
-
-    if (input.eventTags.length > 0) {
-      const matchedTags = await db
-        .select({ id: tags.id })
-        .from(tags)
-        .where(inArray(tags.name, input.eventTags));
-
-      if (matchedTags.length > 0) {
-        await db.insert(eventTags).values(
-          matchedTags.map((t) => ({ eventId: event!.id, tagId: t.id })),
-        );
-      }
-    }
+    await db.insert(events).values({
+      organizerId: session.user.id,
+      title: input.eventName,
+      address: input.eventAddress,
+      theme: input.eventTheme,
+      workType: input.eventType,
+      description: input.desc,
+      isRecurring,
+      helpMode: JSON.stringify(input.helpMode),
+      startDate: startDate || null,
+      endDate: endDate || null,
+      seriesStartDate: input.seriesStartDate ?? null,
+      seriesEndDate: input.seriesEndDate ?? null,
+      selectedDays: input.selectedDays ? JSON.stringify(input.selectedDays) : null,
+      perDayTimes: input.perDayTimes ? JSON.stringify(input.perDayTimes) : null,
+      imageUrl: input.eventImages?.[0] ?? null,
+      galleryImages: JSON.stringify(input.eventImages ?? []),
+    });
   } catch (error) {
     console.error('Esemény mentése sikertelen:', error);
     return { error: 'Hiba történt az esemény mentése során. Próbáld újra!' };
