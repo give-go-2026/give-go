@@ -8,7 +8,6 @@ import { redirect } from 'next/navigation';
 import { inArray } from 'drizzle-orm';
 
 type WorkType = (typeof events.$inferInsert)['workType'];
-type HelpMode = 'Online' | 'Személyes' | 'Hibrid';
 
 export type CreateEventInput = {
   eventName: string;
@@ -17,7 +16,7 @@ export type CreateEventInput = {
   eventType: WorkType;
   eventTags: string[];
   helpFrequency: string;
-  helpMode: HelpMode;
+  helpMode: string[];
   desc: string;
   eventImages?: string[];
   eventStartDate?: string;
@@ -59,7 +58,7 @@ export async function createEventAction(input: CreateEventInput): Promise<{ erro
         workType: input.eventType,
         description: input.desc,
         isRecurring,
-        helpMode: input.helpMode,
+        helpMode: JSON.stringify(input.helpMode),
         startDate: startDate || null,
         endDate: endDate || null,
         seriesStartDate: input.seriesStartDate ?? null,

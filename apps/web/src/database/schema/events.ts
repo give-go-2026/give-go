@@ -34,7 +34,6 @@ export const workTypeEnum = pgEnum('work_type', [
   'Ügyfélszolgálat, Vevőszolgálat',
   'Vendéglátás, Idegenforgalom',
 ]);
-export const helpModeEnum = pgEnum('help_mode', ['Online', 'Személyes', 'Hibrid']);
 
 export const tags = pgTable('tags', {
   id: serial('id').primaryKey(),
@@ -53,7 +52,7 @@ export const events = pgTable('events', {
   workType: workTypeEnum('work_type').notNull(),
   description: text('description').notNull(),
   isRecurring: boolean('is_recurring').notNull().default(false),
-  helpMode: helpModeEnum('help_mode').notNull().default('Személyes'),
+  helpMode: text('help_mode').notNull().default('["Személyes"]'),
   startDate: text('start_date'),
   endDate: text('end_date'),
   seriesStartDate: text('series_start_date'),

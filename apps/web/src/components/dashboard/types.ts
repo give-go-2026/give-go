@@ -15,7 +15,7 @@ export type EventData = {
   eventType: string;
   eventTags: string[];
   helpFrequency: string;
-  helpMode: string;
+  helpMode: string[];
   eventStartDate: string;
   eventStartTime: string;
   eventEndDate: string;

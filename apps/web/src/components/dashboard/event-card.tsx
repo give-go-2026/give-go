@@ -30,7 +30,7 @@ export function EventCard({
           {event.eventType}
         </span>
         <span className='rounded-full bg-cyan-900/10 px-3 py-1 text-xs font-medium text-cyan-900'>
-          {event.helpMode}
+          {event.helpMode.join(', ')}
         </span>
         <span className='rounded-full bg-cyan-900/10 px-3 py-1 text-xs font-medium text-cyan-900'>
           {event.helpFrequency}

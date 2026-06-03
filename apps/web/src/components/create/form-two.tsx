@@ -158,6 +158,7 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
             options={['Online', 'Személyes', 'Hibrid']}
             name='helpMode'
             defaultIndex={1}
+            multiSelect
           />
         </div>
       </div>

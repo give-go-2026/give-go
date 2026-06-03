@@ -623,6 +623,7 @@ export function SwitchField({
   defaultIndex = 0,
   onChange,
   error,
+  multiSelect = false,
 }: {
   label?: string;
   options: string[];
@@ -630,8 +631,10 @@ export function SwitchField({
   defaultIndex?: number;
   onChange?: (value: string, index: number) => void;
   error?: string;
+  multiSelect?: boolean;
 }) {
   const [selected, setSelected] = useState(defaultIndex);
+  const [selectedIndices, setSelectedIndices] = useState<number[]>([defaultIndex]);
   const isFirstRun = useRef(true);
 
   useEffect(() => {
@@ -639,17 +642,38 @@ export function SwitchField({
       isFirstRun.current = false;
       const saved = sessionStorage.getItem(name);
       if (saved) {
-        const idx = options.indexOf(saved);
-        if (idx >= 0) setSelected(idx);
+        if (multiSelect) {
+          try {
+            const vals: string[] = JSON.parse(saved);
+            const indices = vals.map((v) => options.indexOf(v)).filter((i) => i >= 0);
+            if (indices.length > 0) setSelectedIndices(indices);
+          } catch {
+            // ignore invalid sessionStorage value
+          }
+        } else {
+          const idx = options.indexOf(saved);
+          if (idx >= 0) setSelected(idx);
+        }
       }
       return;
     }
-    sessionStorage.setItem(name, options[selected] ?? '');
-  }, [selected, name, options]);
+    if (multiSelect) {
+      const vals = selectedIndices.map((i) => options[i]).filter(Boolean) as string[];
+      sessionStorage.setItem(name, JSON.stringify(vals));
+    } else {
+      sessionStorage.setItem(name, options[selected] ?? '');
+    }
+  }, [selected, selectedIndices, name, options, multiSelect]);
 
   function handleSelect(index: number) {
-    setSelected(index);
-    onChange?.(options[index]!, index);
+    if (multiSelect) {
+      setSelectedIndices((prev) =>
+        prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
+      );
+    } else {
+      setSelected(index);
+      onChange?.(options[index]!, index);
+    }
   }
 
   return (
@@ -662,7 +686,7 @@ export function SwitchField({
             type='button'
             onClick={() => handleSelect(index)}
             className={`flex-1 px-6 py-2 text-base font-medium transition-colors ${
-              selected === index
+              (multiSelect ? selectedIndices.includes(index) : selected === index)
                 ? 'bg-cyan-900 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}

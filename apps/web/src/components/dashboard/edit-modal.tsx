@@ -140,6 +140,7 @@ export function EditModal({
                   />
                   <SwitchInput
                     options={['Online', 'Személyes', 'Hibrid']}
+                    multiSelect
                     value={form.helpMode}
                     onChange={(v) => update('helpMode', v)}
                   />

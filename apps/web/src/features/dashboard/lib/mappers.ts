@@ -47,7 +47,7 @@ export function toEventData(event: DbEvent, tagNames: string[]): EventData {
     eventType: event.workType,
     eventTags: tagNames,
     helpFrequency: event.isRecurring ? 'Rendszeres' : 'Egyszeri',
-    helpMode: event.helpMode,
+    helpMode: parseJsonArray<string>(event.helpMode),
     // One-time fields
     eventStartDate: event.isRecurring ? '' : start.date,
     eventStartTime: event.isRecurring ? '' : start.time,
@@ -87,7 +87,7 @@ export function dbValuesFromEvent(
     workType: event.eventType as EventInsertValues['workType'],
     description: event.desc,
     isRecurring,
-    helpMode: event.helpMode as EventInsertValues['helpMode'],
+    helpMode: JSON.stringify(event.helpMode),
     startDate: startDate || null,
     endDate: endDate || null,
     seriesStartDate: isRecurring ? (event.seriesStartDate || null) : null,

@@ -210,7 +210,7 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           eventType: (get('eventType') || 'fizikai') as CreateEventInput['eventType'],
           eventTags: JSON.parse(get('eventTags') || '[]'),
           helpFrequency: frequency,
-          helpMode: (get('helpMode') || 'Személyes') as 'Online' | 'Személyes' | 'Hibrid',
+          helpMode: JSON.parse(get('helpMode') || '["Személyes"]'),
           desc: get('desc'),
           eventImages: JSON.parse(get('eventImages') || '[]'),
           eventStartDate: get('eventStartDate') || undefined,
