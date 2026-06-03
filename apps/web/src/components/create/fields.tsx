@@ -393,7 +393,9 @@ export function UploadField({
               ),
             );
           }
-        } catch {}
+        } catch {
+          // ignore malformed JSON
+        }
       } else {
         const saved = sessionStorage.getItem(name) ?? '';
         if (saved) setFiles([asDataUrl ? { name: 'Kép', size: 0, url: saved } : { name: saved, size: 0 }]);
@@ -726,6 +728,7 @@ export function DatePickerField({
       return;
     }
     sessionStorage.setItem(name, value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, name]);
 
   useEffect(() => {
@@ -923,6 +926,7 @@ export function TimePickerField({
       return;
     }
     sessionStorage.setItem(name, value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, name]);
 
   useEffect(() => {

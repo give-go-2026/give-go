@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache';
 import { and, eq } from 'drizzle-orm';
 import type { EventData, OrgData } from '@/components/dashboard/types';
 import { dbValuesFromEvent } from './mappers';
+import { sanitizeHelpMode } from '@/features/events/lib/help-mode';
 
 type ActionResult = { error: string } | null;
 
@@ -61,7 +62,10 @@ export async function updateEventAction(event: EventData): Promise<ActionResult>
       return { error: 'Ez az esemény nem szerkeszthető.' };
     }
 
-    await db.update(events).set(dbValuesFromEvent(event)).where(eq(events.id, eventId));
+    await db
+      .update(events)
+      .set(dbValuesFromEvent({ ...event, helpMode: sanitizeHelpMode(event.helpMode) }))
+      .where(eq(events.id, eventId));
   } catch {
     return { error: 'Hiba történt az esemény mentése során. Próbáld újra!' };
   }
@@ -78,7 +82,7 @@ export async function deleteEventAction(id: string): Promise<ActionResult> {
   if (!Number.isInteger(eventId)) return { error: 'Érvénytelen esemény azonosító.' };
 
   try {
-    // Ownership check is enforced inline; cascade removes the event_tags rows.
+    // Ownership is enforced inline; tags now derive from events.theme, so there is no event_tags row to clean up.
     await db
       .delete(events)
       .where(and(eq(events.id, eventId), eq(events.organizerId, currentUser.id)));

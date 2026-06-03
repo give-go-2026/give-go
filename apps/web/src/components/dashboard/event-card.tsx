@@ -15,7 +15,7 @@ export function EventCard({
   const isOneTime = event.helpFrequency === 'Egyszeri';
 
   const dateDisplay = isOneTime
-    ? `${event.eventStartDate}  ${event.eventStartTime}`
+    ? `${event.eventStartDate} ${event.eventStartTime} – ${event.eventEndDate} ${event.eventCloseTime}`.trim()
     : `${event.seriesStartDate} – ${event.seriesEndDate}`;
 
   const dayDisplay =

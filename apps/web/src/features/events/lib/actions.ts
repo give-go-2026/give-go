@@ -5,6 +5,7 @@ import { db } from '@/database';
 import { events } from '@/database/schema';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { sanitizeHelpMode } from './help-mode';
 
 type WorkType = (typeof events.$inferInsert)['workType'];
 
@@ -54,7 +55,7 @@ export async function createEventAction(input: CreateEventInput): Promise<{ erro
       workType: input.eventType,
       description: input.desc,
       isRecurring,
-      helpMode: JSON.stringify(input.helpMode),
+      helpMode: JSON.stringify(sanitizeHelpMode(input.helpMode)),
       startDate: startDate || null,
       endDate: endDate || null,
       seriesStartDate: input.seriesStartDate ?? null,

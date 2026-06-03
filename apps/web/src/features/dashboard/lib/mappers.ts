@@ -46,7 +46,10 @@ export function toEventData(event: DbEvent): EventData {
     eventTheme: event.theme,
     eventType: event.workType,
     helpFrequency: event.isRecurring ? 'Rendszeres' : 'Egyszeri',
-    helpMode: parseJsonArray<string>(event.helpMode),
+    helpMode: (() => {
+      const parsed = parseJsonArray<string>(event.helpMode);
+      return parsed.length > 0 ? parsed : event.helpMode ? [event.helpMode] : [];
+    })(),
     // One-time fields
     eventStartDate: event.isRecurring ? '' : start.date,
     eventStartTime: event.isRecurring ? '' : start.time,
