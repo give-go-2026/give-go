@@ -10,9 +10,9 @@ export default function Card({ card }: { card: EventCard }) {
         <Image
           src={card.image_url}
           alt='Card placeholder'
-          width={335}
-          height={140}
-          className='h-35 w-full object-cover'
+          width={400}
+          height={175}
+          className='h-35 object-cover'
         />
         <div className='flex flex-1 flex-col justify-center gap-1 p-4'>
           <div className='max-h-fit w-full snap-x snap-mandatory overflow-auto'>

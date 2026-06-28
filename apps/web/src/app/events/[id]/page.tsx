@@ -61,7 +61,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
               {card.gallery_images.map((image, index) => (
                 <div
                   key={index}
-                  className='h-46 w-70 shrink-0 snap-center rounded-2xl bg-gray-300'
+                  className='h-full w-70 shrink-0 snap-center rounded-2xl bg-gray-300'
                 >
                   <Image
                     src={image}
