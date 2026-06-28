@@ -15,6 +15,7 @@ export type Profile = {
 
 export type EventCard = {
   id: number;
+  organizerId: string;
   title: string;
   address: string;
   start_date: string;

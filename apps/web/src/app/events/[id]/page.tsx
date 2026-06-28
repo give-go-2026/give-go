@@ -1,6 +1,8 @@
 import { Apply } from '@/components/landing/card-buttons';
 import Header from '@/components/create/header';
 import { fetchCardById, fetchWebsiteById, formatDuration } from '@/lib/utils';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -16,6 +18,9 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
     return notFound();
   }
   const website = await fetchWebsiteById(Number(id));
+
+  const session = await auth.api.getSession({ headers: await headers() });
+  const isOwner = session?.user.id === card.organizerId;
 
   return (
     <div className='min-h-screen overflow-hidden'>
@@ -46,8 +51,17 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
               </span>
               <span className='text-foreground/80 font-bold'>{card.address}</span>
               <span>{card.description_long || card.description}</span>
-              <div className='mt-2 ml-auto flex w-1/2 justify-between gap-2 md:w-1/4'>
-                <Apply id={card.id} />
+              <div className='mt-2 ml-auto flex w-1/2 justify-end gap-2 md:w-1/4'>
+                {isOwner ? (
+                  <Link
+                    href='/dashboard'
+                    className='lex-row relative flex items-center justify-center gap-2 rounded-[30px] bg-blue-300/50 px-3 py-1.5 text-center text-lg text-blue-500 transition duration-150 hover:bg-blue-300/70'
+                  >
+                    Esemény kezelése
+                  </Link>
+                ) : (
+                  <Apply id={card.id} />
+                )}
               </div>
             </div>
           </div>

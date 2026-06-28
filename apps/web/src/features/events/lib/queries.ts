@@ -63,6 +63,7 @@ function galleryFromJson(raw: string): string[] {
 function toEventCard(event: DbEvent, org: DbUser): EventCard {
   return {
     id: event.id,
+    organizerId: event.organizerId,
     title: event.title,
     address: event.address,
     start_date: event.startDate ?? event.seriesStartDate ?? '',
