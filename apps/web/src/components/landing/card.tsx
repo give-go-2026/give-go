@@ -5,7 +5,7 @@ import { formatDuration } from '@/lib/utils';
 
 export default function Card({ card }: { card: EventCard }) {
   return (
-    <div className='h-max max-h-133.75 w-full snap-center rounded-3xl shadow-xl'>
+    <div className='h-max max-h-133.75 w-max snap-center rounded-3xl shadow-xl'>
       <div className='flex h-full flex-col gap-2 overflow-clip rounded-3xl'>
         <Image
           src={card.image_url}

@@ -6,6 +6,8 @@ import { events } from '@/database/schema';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { sanitizeHelpMode } from './help-mode';
+import { searchEvents, type EventSearchFilters } from './queries';
+import type { EventCard } from '@/lib/definitions';
 
 type WorkType = (typeof events.$inferInsert)['workType'];
 
@@ -71,4 +73,8 @@ export async function createEventAction(input: CreateEventInput): Promise<{ erro
   }
 
   redirect('/create/success');
+}
+
+export async function searchEventsAction(filters: EventSearchFilters): Promise<EventCard[]> {
+  return searchEvents(filters);
 }

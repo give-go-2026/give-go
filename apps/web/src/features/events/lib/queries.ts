@@ -1,7 +1,7 @@
 import { db } from '@/database';
-import { events } from '@/database/schema';
+import { events, tags as tagsTable } from '@/database/schema';
 import { user } from '@/database/schema/auth';
-import { eq, desc } from 'drizzle-orm';
+import { and, desc, eq, ilike, inArray, or, sql, type SQL } from 'drizzle-orm';
 import { type EventCard, type Tag } from '@/lib/definitions';
 
 type DbEvent = typeof events.$inferSelect;
@@ -111,6 +111,109 @@ export async function getEventsByCategory(category: 'upcoming' | 'permanent' | '
   if (validRows.length === 0) return [];
 
   return validRows.map((r) => toEventCard(r.events, r.user!));
+}
+
+/**
+ * Extracts the city from a free-text address.
+ * The create flow stores addresses comma-separated as "Irányítószám, Település, Utca, Házszám",
+ * so the second token is the city. Falls back to the whole trimmed address otherwise.
+ */
+function cityFromAddress(address: string): string {
+  const parts = address.split(',').map((s) => s.trim());
+  return (parts[1] || parts[0] || '').trim();
+}
+
+export type EventSearchFilters = {
+  organizations?: string[];
+  groups?: string[];
+  locations?: string[];
+  workTypes?: string[];
+  helpModes?: string[];
+  recurring?: boolean;
+};
+
+export type SearchFilterOptions = {
+  organizations: string[];
+  groups: string[];
+  locations: string[];
+  workTypes: string[];
+};
+
+/** Options that populate the detailed-search filter inputs (organizations, groups, locations, work types). */
+export async function getSearchFilterOptions(): Promise<SearchFilterOptions> {
+  const [organizerRows, groupRows, addressRows, workTypeRows] = await Promise.all([
+    db
+      .selectDistinct({ name: user.name })
+      .from(events)
+      .innerJoin(user, eq(events.organizerId, user.id)),
+    db.select({ name: tagsTable.name }).from(tagsTable),
+    db.selectDistinct({ address: events.address }).from(events),
+    db.selectDistinct({ workType: events.workType }).from(events),
+  ]);
+
+  const organizations = organizerRows
+    .map((r) => r.name)
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b, 'hu'));
+
+  const groups = groupRows.map((r) => r.name).sort((a, b) => a.localeCompare(b, 'hu'));
+
+  const locations = [...new Set(addressRows.map((r) => cityFromAddress(r.address)).filter(Boolean))].sort(
+    (a, b) => a.localeCompare(b, 'hu'),
+  );
+
+  // Sourced from events actually present, so only work types supported by the live DB enum appear.
+  const workTypes = workTypeRows
+    .map((r) => r.workType)
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b, 'hu'));
+
+  return { organizations, groups, locations, workTypes };
+}
+
+/** Filters events by the detailed-search criteria and returns them as display cards. */
+export async function searchEvents(filters: EventSearchFilters): Promise<EventCard[]> {
+  const conditions: SQL[] = [];
+
+  const orgOr = orIlike(user.name, filters.organizations);
+  if (orgOr) conditions.push(orgOr);
+
+  const groupOr = orIlike(events.theme, filters.groups);
+  if (groupOr) conditions.push(groupOr);
+
+  const locationOr = orIlike(events.address, filters.locations);
+  if (locationOr) conditions.push(locationOr);
+
+  // help_mode is an enum column in the DB, so cast to text before ILIKE.
+  const helpModeOr = orIlike(sql`${events.helpMode}::text`, filters.helpModes);
+  if (helpModeOr) conditions.push(helpModeOr);
+
+  // Compare as text so work-type labels not present in the DB enum simply don't match
+  // (an enum-typed `in (...)` would make Postgres reject unknown labels and fail the query).
+  const workTypes = (filters.workTypes ?? []).map((v) => v.trim()).filter(Boolean);
+  if (workTypes.length > 0) {
+    conditions.push(inArray(sql`${events.workType}::text`, workTypes));
+  }
+
+  if (typeof filters.recurring === 'boolean') {
+    conditions.push(eq(events.isRecurring, filters.recurring));
+  }
+
+  const rows = await db
+    .select()
+    .from(events)
+    .leftJoin(user, eq(events.organizerId, user.id))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(events.createdAt));
+
+  return rows.filter((r) => r.user !== null).map((r) => toEventCard(r.events, r.user!));
+}
+
+/** Builds an OR of case-insensitive substring matches for the given column, or undefined when no values. */
+function orIlike(column: Parameters<typeof ilike>[0], values?: string[]): SQL | undefined {
+  const cleaned = (values ?? []).map((v) => v.trim()).filter(Boolean);
+  if (cleaned.length === 0) return undefined;
+  return or(...cleaned.map((v) => ilike(column, `%${v}%`)));
 }
 
 export async function getEventById(id: number): Promise<EventCard | null> {

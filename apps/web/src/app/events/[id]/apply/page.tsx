@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@repo/ui/button';
-import { fetchCardById, formatDuration } from '@/lib/utils';
+import { formatDuration } from '@/lib/utils';
+import { getEventById } from '@/features/events/lib/queries';
 
 export default async function ApplyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -12,7 +13,7 @@ export default async function ApplyPage({ params }: { params: Promise<{ id: stri
     return notFound();
   }
 
-  const card = await fetchCardById(Number(id));
+  const card = await getEventById(Number(id));
   if (!card) {
     return notFound();
   }

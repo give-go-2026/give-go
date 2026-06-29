@@ -1,33 +1,55 @@
 'use client';
 
 import { searchProfiles } from '@/lib/constants';
-import { ArrowDownIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { searchEventsAction } from '@/features/events/lib/actions';
+import type { EventSearchFilters, SearchFilterOptions } from '@/features/events/lib/queries';
+import type { EventCard } from '@/lib/definitions';
+import { TagAutocomplete } from '@/components/ui/tag-autocomplete';
+import Card from '@/components/landing/card';
+import { ArrowDownIcon, ArrowRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import Button from '@repo/ui/button';
 import Image from 'next/image';
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useEffect, useRef, useState } from 'react';
 
-export default function SearchMain() {
+/** Preset filter sets applied when a profile button is clicked. Keyed by Profile.name. */
+const PROFILE_FILTERS: Record<string, EventSearchFilters> = {
+  helping: {},
+  professional: {
+    workTypes: [
+      'irodai',
+      'IT programozás, Fejlesztés',
+      'Marketing, Média, PR',
+      'Projekt Menedzsment',
+      'Mérnök',
+      'Pénzügy, Könyvelés',
+    ],
+  },
+  community: { recurring: true },
+  mandatory: {
+    workTypes: [
+      'fizikai',
+      'szociális',
+      'Fizikai, Segéd, Betanított munka',
+      'Oktatás, Tudomány, Sport',
+    ],
+    helpModes: ['Személyes'],
+  },
+};
+
+const HELP_MODES = ['Személyes', 'Online', 'Hibrid'] as const;
+
+export default function SearchMain({ options }: { options: SearchFilterOptions }) {
   const [selectedProfile, setSelectedProfile] = useState(searchProfiles[0]?.id ?? 1);
-  const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([
-    'Petrik Alapítvány',
-  ]);
-  const [selectedGroups, setSelectedGroups] = useState<string[]>(['Gyerekek', 'Tanárok']);
-  const [selectedLocations, setSelectedLocations] = useState<string[]>(['Budapest']);
-  const [locationTypes, setLocationTypes] = useState({
-    in_person: {
-      selected: false,
-      label: 'Személyesen',
-    },
-    online: {
-      selected: false,
-      label: 'Online',
-    },
-    hybrid: {
-      selected: true,
-      label: 'Hibrid',
-    },
-  });
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(['Fizikai munka', 'Irodai munka']);
+  const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([]);
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [selectedWorkTypes, setSelectedWorkTypes] = useState<string[]>([]);
+  const [selectedHelpModes, setSelectedHelpModes] = useState<string[]>([]);
+
+  const [results, setResults] = useState<EventCard[]>([]);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [choosesExactDate, setChoosesExactDate] = useState(false);
   const [selectedDayType, setSelectedDayType] = useState({
     weekday: {
@@ -67,48 +89,46 @@ export default function SearchMain() {
     end: '',
   });
 
-  function handleLocationSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const location = formData.get('location')?.toString().trim();
-    if (location && !selectedLocations.includes(location)) {
-      setSelectedLocations((prev) => [...prev, location]);
-    }
-    event.currentTarget.reset();
+  function currentFilters(): EventSearchFilters {
+    return {
+      organizations: selectedOrganizations,
+      groups: selectedGroups,
+      locations: selectedLocations,
+      workTypes: selectedWorkTypes,
+      helpModes: selectedHelpModes,
+    };
   }
 
-  function handleOrganizationSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const organization = formData.get('organization')?.toString().trim();
-    if (organization && !selectedOrganizations.includes(organization)) {
-      setSelectedOrganizations((prev) => [...prev, organization]);
+  async function performSearch(filters: EventSearchFilters) {
+    setLoading(true);
+    try {
+      const found = await searchEventsAction(filters);
+      setResults(found);
+      setHasSearched(true);
+    } finally {
+      setLoading(false);
     }
-    event.currentTarget.reset();
   }
 
-  function handleGroupSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const group = formData.get('group')?.toString().trim();
-    if (group && !selectedGroups.includes(group)) {
-      setSelectedGroups((prev) => [...prev, group]);
-    }
-    event.currentTarget.reset();
+  function applyProfile(profileId: number, profileName: string) {
+    const preset = PROFILE_FILTERS[profileName] ?? {};
+    setSelectedProfile(profileId);
+    setSelectedOrganizations(preset.organizations ?? []);
+    setSelectedGroups(preset.groups ?? []);
+    setSelectedLocations(preset.locations ?? []);
+    setSelectedWorkTypes(preset.workTypes ?? []);
+    setSelectedHelpModes(preset.helpModes ?? []);
+    void performSearch(preset);
   }
 
-  function handleTypeSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const type = formData.get('type')?.toString().trim();
-    if (type && !selectedTypes.includes(type)) {
-      setSelectedTypes((prev) => [...prev, type]);
-    }
-    event.currentTarget.reset();
+  function toggleHelpMode(mode: string) {
+    setSelectedHelpModes((prev) =>
+      prev.includes(mode) ? prev.filter((m) => m !== mode) : [...prev, mode],
+    );
   }
 
   return (
-    <main className='container flex grow flex-col gap-6 rounded-3xl bg-gray-100 py-6 shadow-xl'>
+    <main className='container flex grow flex-col gap-6 rounded-3xl bg-gray-100 px-5 py-6 shadow-xl'>
       <section className='flex w-full flex-col gap-12 px-6 2xl:flex-row'>
         <div className='flex flex-col justify-center gap-2'>
           <h2 className='text-2xl font-semibold md:text-3xl'>Válaszd ki a rád passzolót!</h2>
@@ -122,68 +142,49 @@ export default function SearchMain() {
               key={profile.name}
               title={profile.title}
               selected={profile.id === selectedProfile}
-              onClickAction={() => setSelectedProfile(profile.id)}
+              onClickAction={() => applyProfile(profile.id, profile.name)}
             />
           ))}
         </div>
       </section>
       <SectionWrapper>
         <SectionTitle title='Melyik szervezetnek szeretnél segíteni?' />
-        <SectionDescription description='Add meg a szervezet konkrét nevét vagy állíts be tevékenységi köröket amik közül akánljunk szervezetett.' />
-        <form onSubmit={handleOrganizationSubmit}>
-          <SectionInput
+        <SectionDescription description='Itt megadhatod a konkrét szervezetet, ahol segíteni szeretnél.' />
+        <div className='w-full md:w-1/2'>
+          <TagAutocomplete
+            value={selectedOrganizations}
+            onChange={setSelectedOrganizations}
+            suggestions={options.organizations}
             placeholder='pl: Máltai szeretet szolgálat'
-            name='organization'
-            className='w-full md:w-1/2'
           />
-        </form>
-        <div className='flex flex-wrap gap-3'>
-          {selectedOrganizations.map((organization, idx) => (
-            <SelectedItemCard
-              key={idx}
-              title={organization}
-              onClickAction={() =>
-                setSelectedOrganizations((prev) => prev.filter((org) => org !== organization))
-              }
-            />
-          ))}
         </div>
       </SectionWrapper>
       <SectionWrapper>
         <SectionTitle title='Kiknek szeretnél segíteni?' />
         <SectionDescription description='Add meg a célcsoportot akinek segíteni szeretnél.' />
-        <form onSubmit={handleGroupSubmit}>
-          <SectionInput
+        <div className='w-full md:w-1/2'>
+          <TagAutocomplete
+            value={selectedGroups}
+            onChange={setSelectedGroups}
+            suggestions={options.groups}
             placeholder='pl: Állatok'
-            name='group'
-            className='w-full md:w-1/2'
           />
-        </form>
-        <div className='flex flex-wrap gap-3'>
-          {selectedGroups.map((group, idx) => (
-            <SelectedItemCard
-              key={idx}
-              title={group}
-              onClickAction={() => setSelectedGroups((prev) => prev.filter((grp) => grp !== group))}
-            />
-          ))}
         </div>
       </SectionWrapper>
       <SectionWrapper>
         <SectionTitle title='Hol szeretnél önkénteskedni?' />
-        <SectionDescription description='Add meg a régiót vagy a települést' />
-        <form onSubmit={handleLocationSubmit}>
-          <SectionInput
-            placeholder='Pl: Kalocsa'
-            name='location'
-            className='w-full md:w-1/2'
-          />
-        </form>
-        <span>Válasz egy városrészt amin belül mutatjuk a lehetőségeket.</span>
+        <SectionDescription description='Válassz a regisztrált helyszínek közül.' />
+        <MultiSelectDropdown
+          options={options.locations}
+          selected={selectedLocations}
+          onChange={setSelectedLocations}
+          placeholder='Válassz helyszínt'
+          className='w-full md:w-1/2'
+        />
         <div className='flex flex-wrap gap-3'>
-          {selectedLocations.map((location, idx) => (
+          {selectedLocations.map((location) => (
             <SelectedItemCard
-              key={idx}
+              key={location}
               title={location}
               onClickAction={() =>
                 setSelectedLocations((prev) => prev.filter((loc) => loc !== location))
@@ -196,44 +197,36 @@ export default function SearchMain() {
         <SectionTitle title='Hogyan szeretnél segíteni?' />
         <SectionDescription description='Többet is beállíthatsz.' />
         <div className='grid grid-cols-1 justify-around gap-6 md:grid-cols-3 md:gap-14 lg:gap-18'>
-          {Object.entries(locationTypes).map(([key, { label, selected }]) => (
+          {HELP_MODES.map((mode) => (
             <Button
-              key={key}
-              styleVariant={selected ? 'filled' : 'outlined'}
+              key={mode}
+              styleVariant={selectedHelpModes.includes(mode) ? 'filled' : 'outlined'}
               styleType='primary'
-              onClick={() =>
-                setLocationTypes((prev) => ({
-                  ...prev,
-                  [key]: {
-                    ...prev[key as keyof typeof prev],
-                    selected: !prev[key as keyof typeof prev].selected,
-                  },
-                }))
-              }
+              onClick={() => toggleHelpMode(mode)}
               fill
               big
             >
-              {label}
+              {mode}
             </Button>
           ))}
         </div>
       </SectionWrapper>
       <SectionWrapper>
         <SectionTitle title='Milyen típusú önkénteskedést keresel?' />
-        <SectionDescription description='Add meg a típusokat.' />
-        <form onSubmit={handleTypeSubmit}>
-          <SectionInput
-            placeholder='Pl: Fizikai/irodai munka'
-            name='type'
-            className='w-full md:w-1/2'
-          />
-        </form>
+        <SectionDescription description='Több típust is kiválaszthatsz.' />
+        <MultiSelectDropdown
+          options={options.workTypes}
+          selected={selectedWorkTypes}
+          onChange={setSelectedWorkTypes}
+          placeholder='Válassz munka típust'
+          className='w-full md:w-1/2'
+        />
         <div className='flex flex-wrap gap-3'>
-          {selectedTypes.map((type, idx) => (
+          {selectedWorkTypes.map((type) => (
             <SelectedItemCard
-              key={idx}
+              key={type}
               title={type}
-              onClickAction={() => setSelectedTypes((prev) => prev.filter((t) => t !== type))}
+              onClickAction={() => setSelectedWorkTypes((prev) => prev.filter((t) => t !== type))}
             />
           ))}
         </div>
@@ -344,12 +337,123 @@ export default function SearchMain() {
       <Button
         styleType='primary'
         styleVariant='outlined'
+        onClick={() => void performSearch(currentFilters())}
         fill
         big
       >
-        Keresés
+        {loading ? 'Keresés…' : 'Keresés'}
       </Button>
+      {hasSearched && (
+        <SearchResults
+          results={results}
+          loading={loading}
+        />
+      )}
     </main>
+  );
+}
+
+function SearchResults({ results, loading }: { results: EventCard[]; loading: boolean }) {
+  if (loading && results.length === 0) {
+    return <p className='px-2 text-lg text-gray-500'>Keresés folyamatban…</p>;
+  }
+  if (results.length === 0) {
+    return (
+      <p className='px-2 text-lg text-gray-500'>
+        Nincs a szűrőknek megfelelő találat. Próbálj tágítani a szűrőkön.
+      </p>
+    );
+  }
+  return (
+    <section className='flex flex-col items-center gap-4'>
+      <h3 className='px-2 text-xl font-semibold md:text-2xl'>{results.length} találat</h3>
+      <div className='grid min-h-fit min-w-fit grid-cols-1 place-content-between gap-10 px-5 pt-5 pb-10 lg:grid-cols-2 2xl:grid-cols-3'>
+        {results.map((card) => (
+          <Card
+            key={card.id}
+            card={card}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MultiSelectDropdown({
+  options,
+  selected,
+  onChange,
+  placeholder,
+  className,
+}: {
+  options: string[];
+  selected: string[];
+  onChange: (next: string[]) => void;
+  placeholder: string;
+  className?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  function toggle(option: string) {
+    onChange(
+      selected.includes(option) ? selected.filter((o) => o !== option) : [...selected, option],
+    );
+  }
+
+  return (
+    <div
+      className={`relative ${className ?? ''}`}
+      ref={containerRef}
+    >
+      <button
+        type='button'
+        onClick={() => setIsOpen((v) => !v)}
+        className='focus:outline-foreground focus:border-foreground flex w-full items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left text-lg'
+      >
+        <span className={selected.length > 0 ? 'text-gray-900' : 'text-gray-400'}>
+          {selected.length > 0 ? `${selected.length} kiválasztva` : placeholder}
+        </span>
+        <ChevronDownIcon className='size-5 shrink-0 text-gray-400' />
+      </button>
+      {isOpen && (
+        <ul className='absolute top-full left-0 z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-gray-200 bg-white py-1 shadow-xl'>
+          {options.length === 0 && (
+            <li className='px-3 py-2 text-sm text-gray-400'>Nincs elérhető opció</li>
+          )}
+          {options.map((option) => (
+            <li key={option}>
+              <button
+                type='button'
+                onClick={() => toggle(option)}
+                className='flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 hover:bg-cyan-50'
+              >
+                <span
+                  className={`flex size-4 shrink-0 items-center justify-center rounded border ${
+                    selected.includes(option)
+                      ? 'border-cyan-900 bg-cyan-900 text-white'
+                      : 'border-gray-300'
+                  }`}
+                >
+                  {selected.includes(option) && '✓'}
+                </span>
+                {option}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
@@ -367,25 +471,6 @@ function SectionTitle({ title }: { title: string }) {
 
 function SectionDescription({ description }: { description: string }) {
   return <span className='text-base md:text-lg'>{description}</span>;
-}
-
-function SectionInput({
-  placeholder,
-  name,
-  className,
-}: {
-  placeholder: string;
-  name: string;
-  className?: string;
-}) {
-  return (
-    <input
-      type='text'
-      className={`focus:outline-foreground focus:border-foreground mt-3 rounded-lg border border-gray-300 px-4 py-2 text-lg ${className}`}
-      placeholder={placeholder}
-      name={name}
-    />
-  );
 }
 
 function ProfileCard({

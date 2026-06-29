@@ -1,6 +1,3 @@
-import { getOrganizerWebsite } from '@/features/auth/lib/queries';
-import { getEventById } from '@/features/events/lib/queries';
-
 const removeSpacesAfterDots = (value: string): string => value.replace(/\.(?=\s.*\.)\s/g, '.');
 
 export const formatDuration = (start: Date, end: Date): string => {
@@ -27,11 +24,3 @@ export const formatDuration = (start: Date, end: Date): string => {
   const endFormatted = removeSpacesAfterDots(new Intl.DateTimeFormat('hu-HU', options).format(end));
   return `${startFormatted} - ${endFormatted}`;
 };
-
-export const fetchCardById = async (id: number) => {
-  return getEventById(id);
-};
-
-export const fetchWebsiteById = async (id: number) => {
-  return getOrganizerWebsite(id)
-}

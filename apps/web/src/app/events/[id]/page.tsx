@@ -1,6 +1,8 @@
 import { Apply } from '@/components/landing/card-buttons';
 import Header from '@/components/create/header';
-import { fetchCardById, fetchWebsiteById, formatDuration } from '@/lib/utils';
+import { formatDuration } from '@/lib/utils';
+import { getEventById } from '@/features/events/lib/queries';
+import { getOrganizerWebsite } from '@/features/auth/lib/queries';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import Image from 'next/image';
@@ -13,11 +15,11 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
     return notFound();
   }
 
-  const card = await fetchCardById(Number(id));
+  const card = await getEventById(Number(id));
   if (!card) {
     return notFound();
   }
-  const website = await fetchWebsiteById(Number(id));
+  const website = await getOrganizerWebsite(Number(id));
 
   const session = await auth.api.getSession({ headers: await headers() });
   const isOwner = session?.user.id === card.organizerId;
