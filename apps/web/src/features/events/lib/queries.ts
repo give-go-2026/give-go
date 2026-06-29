@@ -131,6 +131,8 @@ export type EventSearchFilters = {
   workTypes?: string[];
   helpModes?: string[];
   recurring?: boolean;
+  startDate?: string;
+  endDate?: string;
 };
 
 export type SearchFilterOptions = {
@@ -211,6 +213,16 @@ export async function searchEvents(filters: EventSearchFilters): Promise<EventCa
   if (typeof filters.recurring === 'boolean') {
     conditions.push(eq(events.isRecurring, filters.recurring));
   }
+
+  // Filter by the event's effective start date. Stored as ISO text ("YYYY-MM-DD[ HH:MM]"),
+  // so comparing the leading 10-char date part lexicographically matches chronological order.
+  const eventStartDate = sql`left(coalesce(${events.startDate}, ${events.seriesStartDate}), 10)`;
+
+  const start = filters.startDate?.trim();
+  if (start) conditions.push(sql`${eventStartDate} >= ${start}`);
+
+  const end = filters.endDate?.trim();
+  if (end) conditions.push(sql`${eventStartDate} <= ${end}`);
 
   const rows = await db
     .select()

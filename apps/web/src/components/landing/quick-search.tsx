@@ -29,11 +29,15 @@ export default function QuickSearchBar() {
 
   const handleSearch = async () => {
     const query = text.trim();
-    if (!query) return;
+    if (!query && !startDate && !endDate) return;
     setLoading(true);
     setIsOpen(true);
     try {
-      const found = await searchEventsAction({ query });
+      const found = await searchEventsAction({
+        query: query || undefined,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+      });
       setResults(found);
     } finally {
       setLoading(false);
