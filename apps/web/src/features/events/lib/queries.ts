@@ -124,6 +124,7 @@ function cityFromAddress(address: string): string {
 }
 
 export type EventSearchFilters = {
+  query?: string;
   organizations?: string[];
   groups?: string[];
   locations?: string[];
@@ -174,6 +175,18 @@ export async function getSearchFilterOptions(): Promise<SearchFilterOptions> {
 /** Filters events by the detailed-search criteria and returns them as display cards. */
 export async function searchEvents(filters: EventSearchFilters): Promise<EventCard[]> {
   const conditions: SQL[] = [];
+
+  // Free-text quick search: match the keyword across the main displayed fields.
+  const q = filters.query?.trim();
+  if (q) {
+    const keywordOr = or(
+      ilike(events.title, `%${q}%`),
+      ilike(events.description, `%${q}%`),
+      ilike(events.theme, `%${q}%`),
+      ilike(events.address, `%${q}%`),
+    );
+    if (keywordOr) conditions.push(keywordOr);
+  }
 
   const orgOr = orIlike(user.name, filters.organizations);
   if (orgOr) conditions.push(orgOr);
