@@ -28,7 +28,13 @@ const thirdSchema = z.object({
   desc: z.string().min(1, 'Leírás kötelező!').max(1000, 'Leírás maximum 1000 karakter lehet!'),
 });
 
-export default function Forms({ startAtEventDetails = false }: { startAtEventDetails?: boolean }) {
+export default function Forms({
+  startAtEventDetails = false,
+  usedTags = [],
+}: {
+  startAtEventDetails?: boolean;
+  usedTags?: string[];
+}) {
   const router = useRouter();
   const [page, setPage] = useState(startAtEventDetails ? 1 : 0);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -107,14 +113,12 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
         .object({
           eventStartDate: z.string().min(1, 'Esemény kezdő dátuma kötelező!'),
           eventStartTime: z.string().min(1, 'Kezdés időpontja kötelező!'),
-          eventEndTime: z.string().min(1, 'Záró időpontja kötelező!'),
           eventEndDate: z.string().min(1, 'Esemény záró dátuma kötelező!'),
           eventCloseTime: z.string().min(1, 'Zárás időpontja kötelező!'),
         })
         .safeParse({
           eventStartDate: get('eventStartDate'),
           eventStartTime: get('eventStartTime'),
-          eventEndTime: get('eventEndTime'),
           eventEndDate: get('eventEndDate'),
           eventCloseTime: get('eventCloseTime'),
         });
@@ -152,9 +156,6 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
         if (!times.success) Object.assign(errs, zodToRecord(times.error));
       }
     }
-
-    const eventTags: string[] = JSON.parse(get('eventTags') || '[]');
-    if (eventTags.length === 0) errs['eventTags'] = 'Válassz legalább egy célcsoportot!';
 
     return errs;
   }
@@ -210,15 +211,14 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           eventAddress: get('eventAddress'),
           eventTheme: get('eventTheme'),
           eventType: (get('eventType') || 'fizikai') as CreateEventInput['eventType'],
-          eventTags: JSON.parse(get('eventTags') || '[]'),
           helpFrequency: frequency,
-          helpMode: (get('helpMode') || 'Személyes') as 'Online' | 'Személyes' | 'Hibrid',
+          helpMode: JSON.parse(get('helpMode') || '["Személyes"]'),
           desc: get('desc'),
           eventImages: JSON.parse(get('eventImages') || '[]'),
           eventStartDate: get('eventStartDate') || undefined,
           eventStartTime: get('eventStartTime') || undefined,
           eventEndDate: get('eventEndDate') || undefined,
-          eventEndTime: get('eventEndTime') || undefined,
+          eventCloseTime: get('eventCloseTime') || undefined,
           seriesStartDate: get('seriesStartDate') || undefined,
           seriesEndDate: get('seriesEndDate') || undefined,
           selectedDays: isRecurring ? selectedDays : undefined,
@@ -276,7 +276,10 @@ export default function Forms({ startAtEventDetails = false }: { startAtEventDet
           {page === 0 ? (
             <FormOne errors={fieldErrors} />
           ) : page === 1 ? (
-            <FormTwo errors={fieldErrors} />
+            <FormTwo
+              errors={fieldErrors}
+              usedTags={usedTags}
+            />
           ) : (
             <FormThree errors={fieldErrors} />
           )}

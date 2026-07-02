@@ -3,6 +3,7 @@ import { EventCard } from './definitions';
 
 export const placeHolderEventCard = (id: number): EventCard => ({
   id,
+  organizerId: '1',
   title: 'Óvoda festés Szigetszentmiklóson',
   address: '2300 Szigetszentmiklós, Karakas Bence 100.',
   start_date: '2025. 11. 10. 10:00',

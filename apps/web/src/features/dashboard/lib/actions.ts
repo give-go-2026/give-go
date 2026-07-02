@@ -2,13 +2,14 @@
 
 import { auth } from '@/lib/auth';
 import { db } from '@/database';
-import { events, eventTags, tags } from '@/database/schema';
+import { events } from '@/database/schema';
 import { user } from '@/database/schema/auth';
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type { EventData, OrgData } from '@/components/dashboard/types';
 import { dbValuesFromEvent } from './mappers';
+import { sanitizeHelpMode } from '@/features/events/lib/help-mode';
 
 type ActionResult = { error: string } | null;
 
@@ -61,21 +62,10 @@ export async function updateEventAction(event: EventData): Promise<ActionResult>
       return { error: 'Ez az esemény nem szerkeszthető.' };
     }
 
-    await db.update(events).set(dbValuesFromEvent(event)).where(eq(events.id, eventId));
-
-    // Replace the event's tags to match the edited selection.
-    await db.delete(eventTags).where(eq(eventTags.eventId, eventId));
-
-    if (event.eventTags.length > 0) {
-      const matchedTags = await db
-        .select({ id: tags.id })
-        .from(tags)
-        .where(inArray(tags.name, event.eventTags));
-
-      if (matchedTags.length > 0) {
-        await db.insert(eventTags).values(matchedTags.map((t) => ({ eventId, tagId: t.id })));
-      }
-    }
+    await db
+      .update(events)
+      .set(dbValuesFromEvent({ ...event, helpMode: sanitizeHelpMode(event.helpMode) }))
+      .where(eq(events.id, eventId));
   } catch {
     return { error: 'Hiba történt az esemény mentése során. Próbáld újra!' };
   }
@@ -92,7 +82,7 @@ export async function deleteEventAction(id: string): Promise<ActionResult> {
   if (!Number.isInteger(eventId)) return { error: 'Érvénytelen esemény azonosító.' };
 
   try {
-    // Ownership check is enforced inline; cascade removes the event_tags rows.
+    // Ownership is enforced inline; tags now derive from events.theme, so there is no event_tags row to clean up.
     await db
       .delete(events)
       .where(and(eq(events.id, eventId), eq(events.organizerId, currentUser.id)));

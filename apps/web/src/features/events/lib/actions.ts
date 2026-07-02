@@ -2,28 +2,28 @@
 
 import { auth } from '@/lib/auth';
 import { db } from '@/database';
-import { events, eventTags, tags } from '@/database/schema';
+import { events } from '@/database/schema';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { inArray } from 'drizzle-orm';
+import { sanitizeHelpMode } from './help-mode';
+import { searchEvents, type EventSearchFilters } from './queries';
+import type { EventCard } from '@/lib/definitions';
 
 type WorkType = (typeof events.$inferInsert)['workType'];
-type HelpMode = 'Online' | 'Személyes' | 'Hibrid';
 
 export type CreateEventInput = {
   eventName: string;
   eventAddress: string;
   eventTheme: string;
   eventType: WorkType;
-  eventTags: string[];
   helpFrequency: string;
-  helpMode: HelpMode;
+  helpMode: string[];
   desc: string;
   eventImages?: string[];
   eventStartDate?: string;
   eventStartTime?: string;
   eventEndDate?: string;
-  eventEndTime?: string;
+  eventCloseTime?: string;
   seriesStartDate?: string;
   seriesEndDate?: string;
   selectedDays?: number[];
@@ -46,47 +46,35 @@ export async function createEventAction(input: CreateEventInput): Promise<{ erro
 
   const endDate = isRecurring
     ? `${input.seriesEndDate ?? ''} ${input.endTime ?? ''}`.trim()
-    : `${input.eventEndDate ?? ''} ${input.eventEndTime ?? ''}`.trim();
+    : `${input.eventEndDate ?? ''} ${input.eventCloseTime ?? ''}`.trim();
 
   try {
-    const [event] = await db
-      .insert(events)
-      .values({
-        organizerId: session.user.id,
-        title: input.eventName,
-        address: input.eventAddress,
-        theme: input.eventTheme,
-        workType: input.eventType,
-        description: input.desc,
-        isRecurring,
-        helpMode: input.helpMode,
-        startDate: startDate || null,
-        endDate: endDate || null,
-        seriesStartDate: input.seriesStartDate ?? null,
-        seriesEndDate: input.seriesEndDate ?? null,
-        selectedDays: input.selectedDays ? JSON.stringify(input.selectedDays) : null,
-        perDayTimes: input.perDayTimes ? JSON.stringify(input.perDayTimes) : null,
-        imageUrl: input.eventImages?.[0] ?? null,
-        galleryImages: JSON.stringify(input.eventImages ?? []),
-      })
-      .returning();
-
-    if (input.eventTags.length > 0) {
-      const matchedTags = await db
-        .select({ id: tags.id })
-        .from(tags)
-        .where(inArray(tags.name, input.eventTags));
-
-      if (matchedTags.length > 0) {
-        await db.insert(eventTags).values(
-          matchedTags.map((t) => ({ eventId: event!.id, tagId: t.id })),
-        );
-      }
-    }
+    await db.insert(events).values({
+      organizerId: session.user.id,
+      title: input.eventName,
+      address: input.eventAddress,
+      theme: input.eventTheme,
+      workType: input.eventType,
+      description: input.desc,
+      isRecurring,
+      helpMode: JSON.stringify(sanitizeHelpMode(input.helpMode)),
+      startDate: startDate || null,
+      endDate: endDate || null,
+      seriesStartDate: input.seriesStartDate ?? null,
+      seriesEndDate: input.seriesEndDate ?? null,
+      selectedDays: input.selectedDays ? JSON.stringify(input.selectedDays) : null,
+      perDayTimes: input.perDayTimes ? JSON.stringify(input.perDayTimes) : null,
+      imageUrl: input.eventImages?.[0] ?? null,
+      galleryImages: JSON.stringify(input.eventImages ?? []),
+    });
   } catch (error) {
     console.error('Esemény mentése sikertelen:', error);
     return { error: 'Hiba történt az esemény mentése során. Próbáld újra!' };
   }
 
   redirect('/create/success');
+}
+
+export async function searchEventsAction(filters: EventSearchFilters): Promise<EventCard[]> {
+  return searchEvents(filters);
 }

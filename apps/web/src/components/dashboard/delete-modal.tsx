@@ -23,7 +23,7 @@ export function DeleteModal({
         <h2 className='mb-2 text-lg font-bold'>Esemény törlése</h2>
         <p className='mb-6 text-sm text-gray-600'>
           Biztosan törölni szeretnéd a{' '}
-          <span className='font-medium text-foreground'>"{event.eventName}"</span> eseményt? Ez a
+          <span className='font-medium text-foreground'>&bdquo;{event.eventName}&rdquo;</span> eseményt? Ez a
           művelet nem vonható vissza.
         </p>
         <div className='flex justify-end gap-3'>

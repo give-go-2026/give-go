@@ -12,9 +12,11 @@ import { deleteEventAction, updateEventAction, updateOrgAction } from '@/feature
 export default function Dashboard({
   initialOrg,
   initialEvents,
+  usedTags,
 }: {
   initialOrg: OrgData;
   initialEvents: EventData[];
+  usedTags: string[];
 }) {
   const [org, setOrg] = useState<OrgData>(initialOrg);
   const [events, setEvents] = useState<EventData[]>(initialEvents);
@@ -143,6 +145,7 @@ export default function Dashboard({
       {editingEvent && (
         <EditModal
           event={editingEvent}
+          usedTags={usedTags}
           onClose={() => setEditingEvent(null)}
           onSave={handleSaveEvent}
         />

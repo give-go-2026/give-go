@@ -1,5 +1,12 @@
 import Navbar from '@/components/landing/navbar';
 import SearchMain from '@/components/search/main';
+import { getSearchFilterOptions } from '@/features/events/lib/queries';
+import { Suspense } from 'react';
+
+async function SearchSection() {
+  const options = await getSearchFilterOptions();
+  return <SearchMain options={options} />;
+}
 
 export default function DetailedSearchPage() {
   return (
@@ -11,7 +18,9 @@ export default function DetailedSearchPage() {
         </div>
       </header>
       <div className='mx-3 -mt-20 grow md:mx-18 md:-mt-15'>
-        <SearchMain />
+        <Suspense fallback={null}>
+          <SearchSection />
+        </Suspense>
       </div>
     </div>
   );

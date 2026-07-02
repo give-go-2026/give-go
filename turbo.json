@@ -4,7 +4,16 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "env": ["DEV_ORIGINS", "DATABASE_URL", "RESEND_API_KEY", "NODE_ENV", "AUTH_SECRET"],
+      "env": [
+        "DEV_ORIGINS",
+        "DATABASE_URL",
+        "RESEND_API_KEY",
+        "NODE_ENV",
+        "AUTH_SECRET",
+        "NEON_LOCAL",
+        "VERCEL_PROJECT_PRODUCTION_URL",
+        "VERCEL_URL"
+      ],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },

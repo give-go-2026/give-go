@@ -35,7 +35,7 @@ export function toOrgData(u: DbUser): OrgData {
   };
 }
 
-export function toEventData(event: DbEvent, tagNames: string[]): EventData {
+export function toEventData(event: DbEvent): EventData {
   const start = splitDateTime(event.startDate);
   const end = splitDateTime(event.endDate);
 
@@ -45,15 +45,16 @@ export function toEventData(event: DbEvent, tagNames: string[]): EventData {
     eventAddress: event.address,
     eventTheme: event.theme,
     eventType: event.workType,
-    eventTags: tagNames,
     helpFrequency: event.isRecurring ? 'Rendszeres' : 'Egyszeri',
-    helpMode: event.helpMode,
+    helpMode: (() => {
+      const parsed = parseJsonArray<string>(event.helpMode);
+      return parsed.length > 0 ? parsed : event.helpMode ? [event.helpMode] : [];
+    })(),
     // One-time fields
     eventStartDate: event.isRecurring ? '' : start.date,
     eventStartTime: event.isRecurring ? '' : start.time,
-    eventEndTime: event.isRecurring ? '' : end.time,
     eventEndDate: event.isRecurring ? '' : end.date,
-    eventCloseTime: '',
+    eventCloseTime: event.isRecurring ? '' : end.time,
     // Recurring fields
     seriesStartDate: event.seriesStartDate ?? '',
     seriesEndDate: event.seriesEndDate ?? '',
@@ -79,7 +80,7 @@ export function dbValuesFromEvent(
 
   const endDate = isRecurring
     ? `${event.seriesEndDate} ${event.endTime}`.trim()
-    : `${event.eventEndDate} ${event.eventEndTime}`.trim();
+    : `${event.eventEndDate} ${event.eventCloseTime}`.trim();
 
   return {
     title: event.eventName,
@@ -88,7 +89,7 @@ export function dbValuesFromEvent(
     workType: event.eventType as EventInsertValues['workType'],
     description: event.desc,
     isRecurring,
-    helpMode: event.helpMode as EventInsertValues['helpMode'],
+    helpMode: JSON.stringify(event.helpMode),
     startDate: startDate || null,
     endDate: endDate || null,
     seriesStartDate: isRecurring ? (event.seriesStartDate || null) : null,

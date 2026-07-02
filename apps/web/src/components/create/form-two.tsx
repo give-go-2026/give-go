@@ -6,14 +6,20 @@ import {
   AddressField,
   SwitchField,
   ListField,
-  TagField,
+  TagAutocompleteField,
   DatePickerField,
   TimePickerField,
 } from './fields';
 
 const DAYS = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
 
-export default function FormTwo({ errors }: { errors: Record<string, string> }) {
+export default function FormTwo({
+  errors,
+  usedTags,
+}: {
+  errors: Record<string, string>;
+  usedTags: string[];
+}) {
   const [frequencyIndex, setFrequencyIndex] = useState(0);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [differentTimes, setDifferentTimes] = useState(false);
@@ -82,12 +88,12 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
           error={errors['eventAddress']}
         />
 
-        <FormField
+        <TagAutocompleteField
           label='Esemény által támogatott témák'
           placeholder='pl.: Állatvédelem'
-          type='string'
           name='eventTheme'
-          undertext={'Válaszd kiknek, milyen témában nyújt támogatást az esemény'}
+          suggestions={usedTags}
+          undertext={'Írd be a témákat, és Enterrel add hozzá; a korábban használtak közül választhatsz'}
           error={errors['eventTheme']}
         />
         <ListField
@@ -118,28 +124,6 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
           error={errors['eventType']}
         />
 
-        <div className='col-span-full h-auto'>
-          <TagField
-            label='Tagek'
-            tags={[
-              'Idősek',
-              'Gyerekek',
-              'Fiatalok',
-              'Hajléktalanok',
-              'Fogyatékossággal élők',
-              'Szegregátumok',
-              'Iskolák',
-              'Kutyák',
-              'Macskák',
-              'Madarak',
-              'Kacsák',
-              'Fajtamentés',
-            ]}
-            name='eventTags'
-            undertext={null}
-            error={errors['eventTags']}
-          />
-        </div>
       </div>
 
       <div className='flex flex-col gap-2'>
@@ -158,22 +142,21 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
             options={['Online', 'Személyes', 'Hibrid']}
             name='helpMode'
             defaultIndex={1}
+            multiSelect
           />
         </div>
       </div>
 
       {frequencyIndex === 1 ? (
         <div className='flex flex-col gap-4'>
-          <div className='grid grid-cols-4 gap-4'>
-            <div className='col-span-2'>
-              <DatePickerField
-                label='Esemény kezdő dátuma'
-                name='eventStartDate'
-                undertext={null}
-                error={errors['eventStartDate']}
-                onValueChange={setStartDate}
-              />
-            </div>
+          <div className='grid grid-cols-2 gap-4'>
+            <DatePickerField
+              label='Esemény kezdő dátuma'
+              name='eventStartDate'
+              undertext={null}
+              error={errors['eventStartDate']}
+              onValueChange={setStartDate}
+            />
             <TimePickerField
               label='Kezdés időpontja'
               name='eventStartTime'
@@ -181,25 +164,16 @@ export default function FormTwo({ errors }: { errors: Record<string, string> }) 
               error={errors['eventStartTime']}
               onValueChange={setStartTime}
             />
-            <TimePickerField
-              label='Záró időpontja'
-              name='eventEndTime'
-              undertext={null}
-              error={errors['eventEndTime']}
-              minTime={startTime || undefined}
-            />
           </div>
-          <div className='grid grid-cols-4 gap-4'>
-            <div className='col-span-2'>
-              <DatePickerField
-                label='Esemény záró dátuma'
-                name='eventEndDate'
-                undertext={null}
-                error={errors['eventEndDate']}
-                minDate={startDate || undefined}
-                onValueChange={setEndDate}
-              />
-            </div>
+          <div className='grid grid-cols-2 gap-4'>
+            <DatePickerField
+              label='Esemény záró dátuma'
+              name='eventEndDate'
+              undertext={null}
+              error={errors['eventEndDate']}
+              minDate={startDate || undefined}
+              onValueChange={setEndDate}
+            />
             <TimePickerField
               label='Zárás időpontja'
               name='eventCloseTime'

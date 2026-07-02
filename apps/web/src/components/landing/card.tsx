@@ -5,14 +5,14 @@ import { formatDuration } from '@/lib/utils';
 
 export default function Card({ card }: { card: EventCard }) {
   return (
-    <div className='h-max max-h-133.75 w-full snap-center rounded-3xl shadow-xl'>
+    <div className='h-max max-h-133.75 w-73.5 snap-center rounded-3xl shadow-xl md:w-100'>
       <div className='flex h-full flex-col gap-2 overflow-clip rounded-3xl'>
         <Image
           src={card.image_url}
           alt='Card placeholder'
-          width={335}
-          height={140}
-          className='h-35 w-full object-cover'
+          width={400}
+          height={175}
+          className='h-35 object-cover'
         />
         <div className='flex flex-1 flex-col justify-center gap-1 p-4'>
           <div className='max-h-fit w-full snap-x snap-mandatory overflow-auto'>
@@ -34,7 +34,7 @@ export default function Card({ card }: { card: EventCard }) {
             {formatDuration(new Date(card.start_date), new Date(card.end_date))}
           </span>
           <span className='text-sm text-gray-600'>{card.organizer.name}</span>
-          <span className='h-full max-h-18.75 overflow-hidden text-sm text-gray-500'>
+          <span className='line-clamp-3 text-sm wrap-break-word text-gray-500'>
             {card.description}
           </span>
           <div className='mt-2 flex justify-between gap-2'>
