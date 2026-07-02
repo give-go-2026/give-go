@@ -93,24 +93,34 @@ export async function getUsedTags(): Promise<string[]> {
 }
 
 export async function getEventsByCategory(category: 'upcoming' | 'permanent' | 'popular'): Promise<EventCard[]> {
-  const rows = await db
-    .select()
-    .from(events)
-    .leftJoin(user, eq(events.organizerId, user.id))
-    .where(
-      category === 'upcoming'
-        ? eq(events.isRecurring, false)
-        : category === 'permanent'
-          ? eq(events.isRecurring, true)
-          : undefined,
-    )
-    .orderBy(desc(events.createdAt))
-    .limit(3);
+  const fetchCards = async (where: SQL | undefined): Promise<EventCard[]> => {
+    const rows = await db
+      .select()
+      .from(events)
+      .leftJoin(user, eq(events.organizerId, user.id))
+      .where(where)
+      .orderBy(desc(events.createdAt))
+      .limit(3);
 
-  const validRows = rows.filter((r) => r.user !== null);
-  if (validRows.length === 0) return [];
+    return rows.filter((r) => r.user !== null).map((r) => toEventCard(r.events, r.user!));
+  };
 
-  return validRows.map((r) => toEventCard(r.events, r.user!));
+  const where =
+    category === 'upcoming'
+      ? eq(events.isRecurring, false)
+      : category === 'permanent'
+        ? eq(events.isRecurring, true)
+        : undefined;
+
+  const cards = await fetchCards(where);
+
+  // Dev only: keep empty category rows visible while developing by falling back to any
+  // recent events. Production still hides empty categories (via category.tsx).
+  if (cards.length === 0 && process.env.NODE_ENV !== 'production') {
+    return fetchCards(undefined);
+  }
+
+  return cards;
 }
 
 /**
